@@ -25,7 +25,7 @@ func main() {
 
 	// create all permutations of 0, 1, 2, 3, 4
 	perms := permutations.CreatePermutations()
-	// fmt.Println(perms)
+	fmt.Println(perms)
 
 	highestReturn := 0
 	for _, onePerm := range perms {
@@ -36,6 +36,8 @@ func main() {
 		if lastOutput > highestReturn {
 			highestReturn = lastOutput
 		}
+		// ! to test first perm only
+		break
 	}
 	fmt.Println("highestReturn is", highestReturn)
 }
