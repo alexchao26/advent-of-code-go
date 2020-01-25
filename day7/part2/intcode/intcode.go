@@ -15,11 +15,15 @@ import "fmt"
 // }
 
 // RunDiagnostics runs the entire computer on a puzzleInput and an inputValue
-func RunDiagnostics(puzzleInput []int, inputValue int, secondInputValue int) int {
+// three returned ints will be
+// 1. the index that the intcode compiler stopped on
+// 2. the code that triggered the "exit"
+// 3. the output
+func RunDiagnostics(puzzleInput []int, inputValue int, index int) (int, int, int) {
 	// store the lastOutputValue to be returned upon a 99
 	var lastOutputValue int
 
-	for i := 0; i < len(puzzleInput); {
+	for i := index; i < len(puzzleInput); {
 		// find op code (last 2 digits of number), a 1, 2, 3, 4, or 99
 		// find param1 and param2 which are the 100's and 1000's digit in the i-th element
 		opCode, param1, param2, _ := returnCodes(puzzleInput[i])
@@ -38,8 +42,8 @@ func RunDiagnostics(puzzleInput []int, inputValue int, secondInputValue int) int
 		// switch statement to handle the opcode value
 		switch opCode {
 		case 99:
-			fmt.Println("99 halts IntCode instance")
-			return lastOutputValue
+			// fmt.Println("99 halts IntCode instance")
+			return i, 99, lastOutputValue
 		case 1:
 			// add and place (by position)
 			// firstToAdd, secondToAdd := getValue(puzzleInput, param1, puzzleInput[i+1]), getValue(puzzleInput, param2, puzzleInput[i+2])
@@ -55,13 +59,15 @@ func RunDiagnostics(puzzleInput []int, inputValue int, secondInputValue int) int
 			puzzleInput[firstVal] = inputValue
 
 			// adding functionality for a second input value (to get the above lines to use it, overwrite the inputValue variable with the next argument that was passed in)
-			inputValue = secondInputValue
+			// inputValue = secondInputValue
 			i += 2
 		case 4:
 			// output the value to the console, always by position
 			// fmt.Println("output: ", puzzleInput[firstVal])
 			lastOutputValue = puzzleInput[firstVal]
 			i += 2
+			// return the index (to pass back in, a 4 to signal that it was not a halt, and the outputted value)
+			return i, 4, lastOutputValue
 		case 5:
 			// jump-if-true
 			// if first param is != 0 set instruction pointer to value from second parameter
@@ -101,12 +107,12 @@ func RunDiagnostics(puzzleInput []int, inputValue int, secondInputValue int) int
 			i += 4
 		default:
 			fmt.Println("bad opCode!!! returning -999")
-			return -999
+			return 0, 0, -999
 		}
 	}
 
 	fmt.Println("shouldn't have reached end of function, returning -1000")
-	return -1000
+	return 0, 0, -1000
 }
 
 func returnCodes(number int) (int, int, int, int) {
