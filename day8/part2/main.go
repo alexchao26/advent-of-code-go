@@ -17,14 +17,36 @@ func main() {
 
 	layers := makeLayers(charsSlice)
 
-	minIndex := getMinIndex(layers)
+	// fmt.Println(layers)
 
-	ones, twos := countOnesAndTwos(layers[minIndex])
+	final := make([]string, 0)
+	for i := 0; i < 150; i++ {
+		final = append(final, "2")
+		for _, oneLayer := range layers {
+			if oneLayer[i] == "1" {
+				final[i] = "0" // zero to view the final image
+				break
+			} else if oneLayer[i] == "0" {
+				final[i] = " " // blank space so it's easier to see the final image
+				break
+			}
+		}
+	}
 
-	// print solution
-	fmt.Println(ones * twos)
+	finalString := strings.Join(final, "")
+
+	line1, line2, line3, line4, line5, line6 := finalString[0:25], finalString[25:50], finalString[50:75], finalString[75:100], finalString[100:125], finalString[125:150]
+
+	// return the final image, flattened
+	fmt.Println(line1)
+	fmt.Println(line2)
+	fmt.Println(line3)
+	fmt.Println(line4)
+	fmt.Println(line5)
+	fmt.Println(line6)
 }
 
+// helper functions
 func readInputFile(path string) string {
 	var pixelString string
 
@@ -52,36 +74,4 @@ func makeLayers(charsSlice []string) [][]string {
 	}
 	// fmt.Println(layers)
 	return layers
-}
-
-func getMinIndex(layers [][]string) int {
-	min, minIndex := 150, 0 // start at 150, max length of one of our nested arrays
-	for index, layerSlice := range layers {
-		countZeroes := 0
-		for _, pixel := range layerSlice {
-			if pixel == "0" {
-				countZeroes++
-			}
-		}
-		// update min and minIndex if countZeroes is less than the min value
-		if countZeroes < min {
-			min, minIndex = countZeroes, index
-			// fmt.Println(min, minIndex)
-		}
-	}
-
-	return minIndex
-}
-
-func countOnesAndTwos(layer []string) (int, int) {
-	ones, twos := 0, 0
-	// count ones and twos of the layer with the least zeroes
-	for _, pixel := range layer {
-		if pixel == "1" {
-			ones++
-		} else if pixel == "2" {
-			twos++
-		}
-	}
-	return ones, twos
 }
