@@ -19,9 +19,10 @@ import "fmt"
 // 1. the index that the intcode compiler stopped on
 // 2. the code that triggered the "exit"
 // 3. the output
-func RunDiagnostics(puzzleInput []int, inputValue int, index int) (int, int, int) {
+func RunDiagnostics(puzzleInput []int, inputValue, index int) (int, int, int) {
 	// store the lastOutputValue to be returned upon a 99
 	var lastOutputValue int
+	secondInputFlag := false
 
 	for i := index; i < len(puzzleInput); {
 		// find op code (last 2 digits of number), a 1, 2, 3, 4, or 99
@@ -54,12 +55,17 @@ func RunDiagnostics(puzzleInput []int, inputValue int, index int) (int, int, int
 			puzzleInput[thirdVal] = firstVal * secondVal
 			i += 4
 		case 3:
+			// i need some kind of flag here to hold if there is a second input being asked for in the same call...
+			if secondInputFlag {
+				// fmt.Println("results from second input return", i, lastOutputValue)
+				return i, 3, lastOutputValue
+			}
+			secondInputFlag = true
+
 			// fmt.Println("--INPUT OPCODE 3")
 			// write inputValue to puzzle input by position
 			puzzleInput[firstVal] = inputValue
 
-			// adding functionality for a second input value (to get the above lines to use it, overwrite the inputValue variable with the next argument that was passed in)
-			// inputValue = secondInputValue
 			i += 2
 		case 4:
 			// output the value to the console, always by position
