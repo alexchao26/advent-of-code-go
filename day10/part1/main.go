@@ -47,6 +47,7 @@ func main() {
 	// print out the max found
 	fmt.Println("result: ", result)
 	fmt.Println("asteroid for station is at row, col", finalCoords) // [13, 11]
+	fmt.Println("from 13, 11", visibleFromAsteroid(gridSlice, 13, 11))
 }
 
 func readInputFile(path string) []string {
