@@ -23,22 +23,20 @@ func main() {
 	// will be the final result value
 	var result int
 	var finalCoords [2]int
-	// iterate throguh entire slice, for each asteroid found, call a helper function
-	// outer:
+	// iterate through entire slice, for each asteroid found, call a helper function
 	for rowIndex, rowSlice := range gridSlice {
 		for colIndex, element := range rowSlice {
 			if element == "#" {
 				// # are "asteroids", . are empty space
-				// helper function will return how many asteroids are "findable" from this asteroid
+				// helper function will return how many asteroids are "findable" from the current asteroid
 
 				visibleFromElement := visibleFromAsteroid(gridSlice, rowIndex, colIndex)
 				// fmt.Println("visible:", visibleFromElement)
-				// break outer
+
 				// take max of return of helper function at end of each loop
 				if result < visibleFromElement {
 					result = visibleFromElement
-					finalCoords[0] = rowIndex
-					finalCoords[1] = colIndex
+					finalCoords[0], finalCoords[1] = rowIndex, colIndex
 				}
 			}
 		}
@@ -46,8 +44,8 @@ func main() {
 
 	// print out the max found
 	fmt.Println("result: ", result)
-	fmt.Println("asteroid for station is at row, col", finalCoords) // [13, 11]
-	fmt.Println("from 13, 11", visibleFromAsteroid(gridSlice, 13, 11))
+	fmt.Println("best asteroid for the station is at row, col", finalCoords) // [13, 11]
+	fmt.Println("from 13, 11 (y, x)", visibleFromAsteroid(gridSlice, 13, 11))
 }
 
 func readInputFile(path string) []string {
@@ -72,7 +70,7 @@ func readInputFile(path string) []string {
 	return pixelSlice
 }
 
-// helper fucntion will take, x and y coordinates, and the 2D slices?
+// helper function will take, x and y coordinates, and the 2D slices?
 // will create a two maps of floats to booleans (one map to cover left side of asteroid, one map to cover right side of asteroid)
 //     so that anything that is blocked will not be double counted
 // will need edge case handling for planets vertically above or below the current asteroid
@@ -80,7 +78,7 @@ func visibleFromAsteroid(grid [][]string, row, col int) (result int) {
 	// fmt.Println(grid)
 	// make the two maps
 	leftMap, rightMap := make(map[float64]bool), make(map[float64]bool)
-	// make the two booleans for up and down
+	// make the two booleans for up and down. nil value is false
 	var upBool, downBool bool
 
 	// iterate through every element of the grid slices
