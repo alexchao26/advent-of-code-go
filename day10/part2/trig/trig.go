@@ -7,6 +7,7 @@ import (
 // TangentAndDistance docz
 // startX will "always" be 13
 // startY will "always" be 11
+// 0 <= angleOffVery < 360
 func TangentAndDistance(startX, startY, endX, endY int) (angleOffVert, distance float64) {
 	rise, run := float64(endX)-float64(startX), float64(endY)-float64(startY)
 	// fmt.Println(rise, run)
