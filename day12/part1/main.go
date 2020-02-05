@@ -69,7 +69,7 @@ func main() {
 
 func readInputFile(path string) []string {
 	// var pixelString string
-	pixelSlice := make([]string, 0)
+	resultSlice := make([]string, 0)
 	absPath, _ := filepath.Abs(path)
 
 	file, err := os.Open(absPath)
@@ -82,11 +82,11 @@ func readInputFile(path string) []string {
 	for scanner.Scan() {
 		line := scanner.Text()
 		// pixelString = line
-		pixelSlice = append(pixelSlice, line)
+		resultSlice = append(resultSlice, line)
 	}
 
 	// return pixelString
-	return pixelSlice
+	return resultSlice
 }
 
 func makeMoonSlice(stringSlice []string) []moon {
