@@ -23,7 +23,9 @@ import (
 
 		- remove it from the slice of structs
 			- if this is the 200th iteration, store the x and y to return at the end
+		- NOTE there are a limited number of asteroids because of the fixed size of the input, so having a O(200 * n) where n is the number of Asteroids, is not a _terrible_ time complexity
 */
+
 // Asteroid data
 type Asteroid struct {
 	x          int
@@ -35,14 +37,12 @@ type Asteroid struct {
 func main() {
 	// read input.txt file, split it into a slice of lines
 	contents := util.ReadFile("../input.txt") // test/example case @ "./test.txt"
-
-	// convert into a string slice
 	stringSlice := strings.Split(contents, "\n")
 
 	// generate 2D grid of each character from stringSlice
-	gridSlice := make([][]string, len(stringSlice))
+	inputGrid := make([][]string, len(stringSlice))
 	for i, str := range stringSlice {
-		gridSlice[i] = strings.Split(str, "")
+		inputGrid[i] = strings.Split(str, "")
 	}
 
 	//* tests while building the TangetAndDistance function
@@ -55,8 +55,8 @@ func main() {
 	// fmt.Println(trig.TangentAndDistance(1, 1, 2, 0)) // 225 some sqrt
 	// fmt.Println(trig.TangentAndDistance(1, 1, 0, 0)) // 315 some sqrt
 
-	sliceAll := fillSlice(gridSlice)
-	// fmt.Println(sliceAll)
+	allAsteroids := makeAsteroidsSlice(inputGrid)
+	// fmt.Println(allAsteroids)
 
 	// need to start this just to the left of zero to get that as the first input
 	lastDegreeUsed := 359.999999
@@ -64,16 +64,14 @@ func main() {
 	var lastAsteroid Asteroid
 
 	for i := 0; i < 200; i++ {
-		// fmt.Println("---lastDegUsed", lastDegreeUsed) // this number should change in very small increments for each loop
-
-		// iterate through all of sliceAll and find the next closest degree
+		// iterate through all of allAsteroids and find the next closest degree
 		var indexOfAsteroidToDelete int // will be updated by iMin
 
 		// reset the minDegDiff and minDist for each run of the outer loop
 		minDegDiff, minDist := math.Inf(1), math.Inf(1) // I can use inf now b/c I'm using float64's!
 
 		// iterate over the entire slice of asteroids
-		for iMin, eAsteroid := range sliceAll {
+		for iMin, eAsteroid := range allAsteroids {
 			// calculate the degrees difference
 			degDiff := eAsteroid.degOffVert - lastDegreeUsed
 			if degDiff <= 0 { // account for the diff passing over zero
@@ -90,15 +88,16 @@ func main() {
 				minDist = eAsteroid.distance
 				indexOfAsteroidToDelete = iMin
 			}
-
 		}
-		// remove the element at index indexOfAst..
-		// this doesn't maintain order, but I don't care about order right now...
-		lastAsteroid = sliceAll[indexOfAsteroidToDelete]
+
+		// remove the element at index indexOfAst
+		// this doesn't maintain order, but I don't care about order right now
+		lastAsteroid = allAsteroids[indexOfAsteroidToDelete]
+
 		// swap last element to indexToDelete
-		sliceAll[indexOfAsteroidToDelete] = sliceAll[len(sliceAll)-1]
+		allAsteroids[indexOfAsteroidToDelete] = allAsteroids[len(allAsteroids)-1]
 		// re-size slice to effectively pop last element off of slice
-		sliceAll = sliceAll[:len(sliceAll)-1]
+		allAsteroids = allAsteroids[:len(allAsteroids)-1]
 
 		// update last deg used by adding the diff to it
 		lastDegreeUsed += minDegDiff
@@ -108,7 +107,7 @@ func main() {
 		}
 		// fmt.Println(minDegDiff)
 		// fmt.Println("lastAsteroid", i, lastAsteroid)
-		// fmt.Println(indexOfAsteroidToDelete, sliceAll[indexOfAsteroidToDelete])
+		// fmt.Println(indexOfAsteroidToDelete, allAsteroids[indexOfAsteroidToDelete])
 	}
 
 	// print the last used asteroid
@@ -117,7 +116,7 @@ func main() {
 	fmt.Println("Advent of code answer: ", lastAsteroid.y*100+lastAsteroid.x)
 }
 
-func fillSlice(grid [][]string) []Asteroid {
+func makeAsteroidsSlice(grid [][]string) []Asteroid {
 	result := make([]Asteroid, 0)
 
 	// iterate through the entire grid

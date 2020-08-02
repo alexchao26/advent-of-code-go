@@ -47,3 +47,21 @@ func TangentAndDistance(startX, startY, endX, endY int) (angleOffVert, distance 
 
 	return angleOffVert, distance
 }
+
+/*
+AngleOffVertical takes in two 2D points, it calculates the angle
+between the line between then and a vertical line. The angle
+returned is to the right of the vertical, i.e. from the vertical
+and through the (mathematical) first quadrant
+*/
+func AngleOffVertical(startX, startY, endX, endY int) float64 {
+
+	return 0
+}
+
+// Distance calculates the distance between two sets of 2D coordinates via Pythagorean's theorem
+func Distance(startX, startY, endX, endY int) float64 {
+	dx := startX - endX
+	dy := startY - endY
+	return math.Sqrt(float64(dx*dx) + float64(dy*dy))
+}

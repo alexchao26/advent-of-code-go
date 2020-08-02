@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"path"
@@ -9,8 +8,8 @@ import (
 )
 
 /*
-ReadFile takes the relative path from *the caller* and returns the contents
-of the file as a string
+ReadFile is a wrapper over io/ioutil.ReadFile but also determines the
+dynamic absolute path to the file.
 */
 func ReadFile(pathFromCaller string) string {
 	// Docs: https://golang.org/pkg/runtime/#Caller
@@ -20,10 +19,10 @@ func ReadFile(pathFromCaller string) string {
 		log.Fatal("Could not find Caller of util.ReadFile")
 	}
 
+	// parse directory with pathFromCaller (which could be relative to Directory)
 	absolutePath := path.Join(path.Dir(filename), pathFromCaller)
 
-	fmt.Println("abs path is", absolutePath)
-
+	// read the entire file & return the byte slice as a string
 	content, err := ioutil.ReadFile(absolutePath)
 	if err != nil {
 		log.Fatal(err)
