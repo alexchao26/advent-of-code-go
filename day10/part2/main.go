@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"log"
 	"math"
-	"os"
-	"path/filepath"
 	"strings"
 
-	"./trig"
+	"adventofcode/day10/part2/trig"
+	"adventofcode/util"
 )
 
 /*
@@ -27,6 +24,7 @@ import (
 		- remove it from the slice of structs
 			- if this is the 200th iteration, store the x and y to return at the end
 */
+// Asteroid data
 type Asteroid struct {
 	x          int
 	y          int
@@ -35,20 +33,17 @@ type Asteroid struct {
 }
 
 func main() {
-	// need to read the input.txt file (one folder up)
-	// it will be a 2D slice coming from readInputFile now
-	//* actual input file
-	stringSlice := readInputFile("../input.txt")
+	// read input.txt file, split it into a slice of lines
+	contents := util.ReadFile("../input.txt") // test/example case @ "./test.txt"
 
-	// !test case
-	// stringSlice := readInputFile("./test1.txt")
+	// convert into a string slice
+	stringSlice := strings.Split(contents, "\n")
 
-	// fmt.Println(stringSlice, len(stringSlice))
+	// generate 2D grid of each character from stringSlice
 	gridSlice := make([][]string, len(stringSlice))
 	for i, str := range stringSlice {
 		gridSlice[i] = strings.Split(str, "")
 	}
-	// fmt.Println(gridSlice, len(gridSlice))
 
 	//* tests while building the TangetAndDistance function
 	// fmt.Println(trig.TangentAndDistance(13, 11, 0, 11))  // 0 13
@@ -102,7 +97,7 @@ func main() {
 		lastAsteroid = sliceAll[indexOfAsteroidToDelete]
 		// swap last element to indexToDelete
 		sliceAll[indexOfAsteroidToDelete] = sliceAll[len(sliceAll)-1]
-		// re-size slice
+		// re-size slice to effectively pop last element off of slice
 		sliceAll = sliceAll[:len(sliceAll)-1]
 
 		// update last deg used by adding the diff to it
@@ -115,10 +110,11 @@ func main() {
 		// fmt.Println("lastAsteroid", i, lastAsteroid)
 		// fmt.Println(indexOfAsteroidToDelete, sliceAll[indexOfAsteroidToDelete])
 	}
-	// print the last used asteroid
-	fmt.Println(lastAsteroid)
 
-	fmt.Println("advent of code answer: ", lastAsteroid.y*100+lastAsteroid.x)
+	// print the last used asteroid
+	fmt.Println("Last asteroid", lastAsteroid)
+	// print the AoC-formatted answer
+	fmt.Println("Advent of code answer: ", lastAsteroid.y*100+lastAsteroid.x)
 }
 
 func fillSlice(grid [][]string) []Asteroid {
@@ -144,26 +140,4 @@ func fillSlice(grid [][]string) []Asteroid {
 	}
 
 	return result
-}
-
-func readInputFile(path string) []string {
-	// var pixelString string
-	pixelSlice := make([]string, 0)
-	absPath, _ := filepath.Abs(path)
-
-	file, err := os.Open(absPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		// pixelString = line
-		pixelSlice = append(pixelSlice, line)
-	}
-
-	// return pixelString
-	return pixelSlice
 }
