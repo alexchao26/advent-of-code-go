@@ -1,19 +1,15 @@
 package main
 
 import (
-	"bufio"
+	"adventofcode/util"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 )
 
 func main() {
-	pixelString := readInputFile("./input.txt")
-	// fmt.Println(pixelString)
+	input := util.ReadFile("../input.txt")
 
-	charsSlice := strings.Split(pixelString, "")
-	// fmt.Println(charsSlice)
+	charsSlice := strings.Split(input, "")
 
 	layers := makeLayers(charsSlice)
 
@@ -25,24 +21,6 @@ func main() {
 	fmt.Println(ones * twos)
 }
 
-func readInputFile(path string) string {
-	var pixelString string
-
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		pixelString = line
-	}
-
-	return pixelString
-}
-
 func makeLayers(charsSlice []string) [][]string {
 	layers := make([][]string, 0)
 	// layers are 25x6 = 150 characters
@@ -50,7 +28,7 @@ func makeLayers(charsSlice []string) [][]string {
 	for i := 0; i*150 < len(charsSlice); i++ {
 		layers = append(layers, charsSlice[150*i:150*(i+1)])
 	}
-	// fmt.Println(layers)
+
 	return layers
 }
 
@@ -66,7 +44,6 @@ func getMinIndex(layers [][]string) int {
 		// update min and minIndex if countZeroes is less than the min value
 		if countZeroes < min {
 			min, minIndex = countZeroes, index
-			// fmt.Println(min, minIndex)
 		}
 	}
 
@@ -77,9 +54,10 @@ func countOnesAndTwos(layer []string) (int, int) {
 	ones, twos := 0, 0
 	// count ones and twos of the layer with the least zeroes
 	for _, pixel := range layer {
-		if pixel == "1" {
+		switch pixel {
+		case "1":
 			ones++
-		} else if pixel == "2" {
+		case "2":
 			twos++
 		}
 	}

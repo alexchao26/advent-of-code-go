@@ -13,3 +13,4 @@ Day | Name | Type of Algo & Notes
 5 | Sunny with a Chance of Asteroids | - Yay more Intcode!........ <br> - This gave me fits... <br> - Good application for recursion (in my opinion)
 6 | Universal Orbit Map | - __Tree traversal__ and depth calculations. It's not quite a Graph, but it has a __directed graph__ algo feel too
 7 | Amplification Circuit | - More Intcode... Piping together multiple Intcode computers 😳😳😳 <br> - Refactored Intcode computer to an OOP approach so a single computer maintains its data <br> - Also requires making __permutations generator__ <br> - Some gymnastics to make this circular, but its easier with this OOP approach and the "objects"/instances of a struct maintaining their own data
+8 | Space Image Format | 3D Array manipulation

@@ -1,24 +1,21 @@
 package main
 
 import (
-	"bufio"
+	"adventofcode/util"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 )
 
 func main() {
-	pixelString := readInputFile("./input.txt")
-	// fmt.Println(pixelString)
-
+	// read the input file and put it into a slice for each character
+	pixelString := util.ReadFile("../input.txt")
 	charsSlice := strings.Split(pixelString, "")
-	// fmt.Println(charsSlice)
 
+	// make the characers into a 2D slice divided into layers
 	layers := makeLayers(charsSlice)
 
-	// fmt.Println(layers)
-
+	// for each pixel (all layers combined), iterate through all layers of the pixel
+	// iterate from the top layer until a 1 or 0 is found, set it to that value
 	final := make([]string, 0)
 	for i := 0; i < 150; i++ {
 		final = append(final, "2")
@@ -35,34 +32,10 @@ func main() {
 
 	finalString := strings.Join(final, "")
 
-	line1, line2, line3, line4, line5, line6 := finalString[0:25], finalString[25:50], finalString[50:75], finalString[75:100], finalString[100:125], finalString[125:150]
-
-	// return the final image, flattened
-	fmt.Println(line1)
-	fmt.Println(line2)
-	fmt.Println(line3)
-	fmt.Println(line4)
-	fmt.Println(line5)
-	fmt.Println(line6)
-}
-
-// helper functions
-func readInputFile(path string) string {
-	var pixelString string
-
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
+	// Print the six lines (25 characters at a time) individually so the word is legible
+	for i := 0; i < 6; i++ {
+		fmt.Println(finalString[i*25 : (i+1)*25])
 	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		pixelString = line
-	}
-
-	return pixelString
 }
 
 func makeLayers(charsSlice []string) [][]string {
