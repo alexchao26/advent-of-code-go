@@ -12,3 +12,4 @@ Day | Name | Type of Algo & Notes
 4 | Secure Container | - May appear math-y, but it's really a string manipulation problem
 5 | Sunny with a Chance of Asteroids | - Yay more Intcode!........ <br> - This gave me fits... <br> - Good application for recursion (in my opinion)
 6 | Universal Orbit Map | - __Tree traversal__ and depth calculations. It's not quite a Graph, but it has a __directed graph__ algo feel too
+7 | Amplification Circuit | - More Intcode... Piping together multiple Intcode computers 😳😳😳
