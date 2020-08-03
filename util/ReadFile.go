@@ -5,6 +5,7 @@ import (
 	"log"
 	"path"
 	"runtime"
+	"strings"
 )
 
 /*
@@ -27,5 +28,7 @@ func ReadFile(pathFromCaller string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(content)
+	// trim off new lines at end of input files
+	strContent := string(content)
+	return strings.TrimSpace(strContent)
 }
