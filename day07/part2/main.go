@@ -1,89 +1,207 @@
+/*
+Intcode struct is defined within this file
+MakePermutations is in the util package as that will likely be reused
+*/
+
 package main
 
 import (
+	"adventofcode/util"
 	"fmt"
-
-	"./intcode"
-	"./permutations"
+	"log"
+	"strconv"
+	"strings"
 )
 
 func main() {
-	// input to first amp = 0
-	// output of each amp is input of next amp
-	// final output is from amp #5 / E to thrusters
+	// read the input file, modify it to a slice of numbers
+	inputFile := util.ReadFile("../input.txt")
 
-	input := []int{3, 8, 1001, 8, 10, 8, 105, 1, 0, 0, 21, 42, 55, 64, 77, 94, 175, 256, 337, 418, 99999, 3, 9, 102, 4, 9, 9, 1001, 9, 5, 9, 102, 2, 9, 9, 101, 3, 9, 9, 4, 9, 99, 3, 9, 102, 2, 9, 9, 101, 5, 9, 9, 4, 9, 99, 3, 9, 1002, 9, 4, 9, 4, 9, 99, 3, 9, 102, 4, 9, 9, 101, 5, 9, 9, 4, 9, 99, 3, 9, 102, 5, 9, 9, 1001, 9, 3, 9, 1002, 9, 5, 9, 4, 9, 99, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 99, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 99, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 99, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 99, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 99}
+	splitStrings := strings.Split(inputFile, ",")
 
-	// should give 18216
-	// input := []int{3, 52, 1001, 52, -5, 52, 3, 53, 1, 52, 56, 54, 1007, 54, 5, 55, 1005, 55, 26, 1001, 54, -5, 54, 1105, 1, 12, 1, 53, 54, 53, 1008, 54, 0, 55, 1001, 55, 1, 55, 2, 53, 55, 53, 4, 53, 1001, 56, -1, 56, 1005, 56, 6, 99, 0, 0, 0, 0, 10}
+	inputNumbers := make([]int, len(splitStrings))
+	for i, v := range splitStrings {
+		fmt.Println(v)
+		inputNumbers[i], _ = strconv.Atoi(v)
+	}
+	fmt.Println(inputNumbers)
+	// Make perms via a util function
+	perms := util.MakePermutations([]int{5, 6, 7, 8, 9})
 
-	// create all permutations of 5, 6, 7, 8, 9
-	perms := permutations.CreatePermutations(5, 9)
-	// fmt.Println(perms)
+	// iterate over all perms and run through a single pass of the Amps
+	// if the final output (from Amp E) is higher, update the highestOutput variable
+	highestOutput := 0
+	for _, perm := range *perms {
+		// initialize 5 computers
+		ampA := MakeComputer(inputNumbers, perm[0])
+		ampB := MakeComputer(inputNumbers, perm[1])
+		ampC := MakeComputer(inputNumbers, perm[2])
+		ampD := MakeComputer(inputNumbers, perm[3])
+		ampE := MakeComputer(inputNumbers, perm[4])
 
-	// will be the final returned value
-	var highestReturn int
-
-	// loop over all of the permutations
-	for _, onePerm := range perms {
-		// needs to have the right length to copy into
-		input1 := make([]int, len(input))
-		input2 := make([]int, len(input))
-		input3 := make([]int, len(input))
-		input4 := make([]int, len(input))
-		input5 := make([]int, len(input))
-
-		// make copies of the input, one for each thruster
-		copy(input1, input)
-		copy(input2, input)
-		copy(input3, input)
-		copy(input4, input)
-		copy(input5, input)
-
-		// fmt.Println(input1)
-		// fmt.Println(onePerm)
-
-		// This will be the final thruster signal, and we want to return the maximum one
-		var last5Return int // zero nil value!
-
-		// Initial load for the permutation of 5-9
-		index1, _, lastOutput1 := intcode.RunDiagnostics(input1, onePerm[0], 0)
-		index2, _, lastOutput2 := intcode.RunDiagnostics(input2, onePerm[1], 0)
-		index3, _, lastOutput3 := intcode.RunDiagnostics(input3, onePerm[2], 0)
-		index4, _, lastOutput4 := intcode.RunDiagnostics(input4, onePerm[3], 0)
-		index5, exitCode5, lastOutput5 := intcode.RunDiagnostics(input5, onePerm[4], 0)
-		// fmt.Println("INITIAL LOADS DONE"
-
-		// Here's the fix to my problem:
-		// I needed to account for the initial load but then also the second input coming from the preceeding Amp thingy
-		// But because this is the exact same code as the loop below, I've commented it out
-		// index1, _, lastOutput1 = intcode.RunDiagnostics(input1, lastOutput5, index1)
-		// index2, _, lastOutput2 = intcode.RunDiagnostics(input2, lastOutput1, index2)
-		// index3, _, lastOutput3 = intcode.RunDiagnostics(input3, lastOutput2, index3)
-		// index4, _, lastOutput4 = intcode.RunDiagnostics(input4, lastOutput3, index4)
-		// index5, _, lastOutput5 = intcode.RunDiagnostics(input5, lastOutput4, index5)
-		// fmt.Println("Second input load done")
-
-		for exitCode5 != 99 {
-			index1, _, lastOutput1 = intcode.RunDiagnostics(input1, lastOutput5, index1)
-			index2, _, lastOutput2 = intcode.RunDiagnostics(input2, lastOutput1, index2)
-			index3, _, lastOutput3 = intcode.RunDiagnostics(input3, lastOutput2, index3)
-			index4, _, lastOutput4 = intcode.RunDiagnostics(input4, lastOutput3, index4)
-			index5, exitCode5, lastOutput5 = intcode.RunDiagnostics(input5, lastOutput4, index5)
-			if exitCode5 == 4 {
-				last5Return = lastOutput5
-			} else if exitCode5 == 99 {
-				// fmt.Println("99 exit code!", lastOutput5) // loop will end now
-			}
-			// fmt.Println("one full pass") // using this to check if multiple inputs are being asked for
+		// Iterate while the Amps are still running (i.e. not terminated)
+		for ampA.IsRunning && ampB.IsRunning && ampC.IsRunning && ampD.IsRunning && ampE.IsRunning {
+			// first input to Amp A is a zero, this is the zero-value of an int!
+			ampA.Step(ampE.LastOutput)
+			ampB.Step(ampA.LastOutput)
+			ampC.Step(ampB.LastOutput)
+			ampD.Step(ampC.LastOutput)
+			ampE.Step(ampD.LastOutput)
 		}
 
-		// fmt.Println(lastOutput5) // should be changing for each perm
-
-		// check if the max thrust input is higher than highest return
-		if last5Return > highestReturn {
-			highestReturn = last5Return
+		if ampE.LastOutput > highestOutput {
+			highestOutput = ampE.LastOutput
 		}
 	}
-	fmt.Println("highestReturn is", highestReturn)
+
+	// print highest output found
+	fmt.Printf("Highest output is %v\n", highestOutput)
+}
+
+/*
+Intcode is an OOP approach *************************************************
+MakeComputer is equivalent to the constructor
+Step takes in an input int and updates properties in the computer:
+	- InstructionIndex: where to read the next instruction from
+	- LastOutput, what the last opcode 4 outputted
+	- PuzzleIndex based if the last instruction modified the puzzle at all
+****************************************************************************/
+type Intcode struct {
+	PhaseSetting     int   // initial input: ID or number used to "prime"/setup the comp
+	PuzzleInput      []int // file/puzzle input parsed into slice of ints
+	InstructionIndex int   // stores the index where the next instruction is
+	LastOutput       int   // last output from an opcode 4
+	IsRunning        bool  // will be true until a 99 opcode is hit
+}
+
+// MakeComputer initializes a new comp
+func MakeComputer(PuzzleInput []int, PhaseSetting int) Intcode {
+	puzzleInputCopy := make([]int, len(PuzzleInput))
+	copy(puzzleInputCopy, PuzzleInput)
+
+	comp := Intcode{
+		PhaseSetting,
+		puzzleInputCopy,
+		0,
+		0,
+		true,
+	}
+
+	// Prime the computer by running its initial phase setting through it
+	// This will update the comp's InstructionIndex so it's pointing to the next command
+	// will also update the PuzzleInput itself via opcode 3's insert
+	// AND will run the computer until it asks for the next input, _comp is now primed_
+	comp.Step(PhaseSetting)
+	return comp
+}
+
+// Step will read the next 4 values in the input `sli` and make updates
+// according to the opcodes
+func (comp *Intcode) Step(input int) int {
+	// read the instruction, opcode and the indexes where the params point to
+	opcode, paramIndexes := comp.GetOpCodeAndIndexes()
+
+	switch opcode {
+	case 99: // 99: Terminates program
+		fmt.Println("Terminating...")
+		comp.IsRunning = false
+		return input
+	case 1: // 1: Add next two paramIndexes, store in third
+		comp.PuzzleInput[paramIndexes[2]] = comp.PuzzleInput[paramIndexes[0]] + comp.PuzzleInput[paramIndexes[1]]
+		comp.InstructionIndex += 4
+		return comp.Step(input)
+	case 2: // 2: Multiply next two and store in third
+		comp.PuzzleInput[paramIndexes[2]] = comp.PuzzleInput[paramIndexes[0]] * comp.PuzzleInput[paramIndexes[1]]
+		comp.InstructionIndex += 4
+		return comp.Step(input)
+	case 3: // 3: Takes one input and saves it to position of one parameter
+		// check if input has already been used (i.e. input == -1)
+		// if it's been used, return the LastOutput
+		// NOTE: making a big assumption that -1 will never be an input...
+		if input == -1 {
+			return comp.LastOutput
+		}
+
+		// otherwise use the input, then recurse with a -1 to signal the initial input has been used
+		comp.PuzzleInput[paramIndexes[0]] = input
+		comp.InstructionIndex += 2
+		return comp.Step(-1)
+	case 4: // 4: outputs its input value
+		// set LastOutput of the computer & log it
+		comp.LastOutput = comp.PuzzleInput[paramIndexes[0]]
+		// fmt.Printf("Opcode 4 output: %v\n", comp.LastOutput)
+		comp.InstructionIndex += 2
+
+		// continue running until terminates or asks for another input
+		return comp.Step(input)
+	// 5: jump-if-true: if first param != 0, move pointer to second param, else nothing
+	case 5:
+		if comp.PuzzleInput[paramIndexes[0]] != 0 {
+			comp.InstructionIndex = comp.PuzzleInput[paramIndexes[1]]
+		} else {
+			comp.InstructionIndex += 3
+		}
+		return comp.Step(input)
+	// 6: jump-if-false, if first param == 0 then set instruction pointer to 2nd param, else nothing
+	case 6:
+		if comp.PuzzleInput[paramIndexes[0]] == 0 {
+			comp.InstructionIndex = comp.PuzzleInput[paramIndexes[1]]
+		} else {
+			comp.InstructionIndex += 3
+		}
+		return comp.Step(input)
+	// 7: less-than, if param1 < param2 then store 1 in postion of 3rd param, else store 0
+	case 7:
+		if comp.PuzzleInput[paramIndexes[0]] < comp.PuzzleInput[paramIndexes[1]] {
+			comp.PuzzleInput[paramIndexes[2]] = 1
+		} else {
+			comp.PuzzleInput[paramIndexes[2]] = 0
+		}
+		comp.InstructionIndex += 4
+		return comp.Step(input)
+	// 8: equals, if param1 == param2 then set position of 3rd param to 1, else store 0
+	case 8:
+		if comp.PuzzleInput[paramIndexes[0]] == comp.PuzzleInput[paramIndexes[1]] {
+			comp.PuzzleInput[paramIndexes[2]] = 1
+		} else {
+			comp.PuzzleInput[paramIndexes[2]] = 0
+		}
+		comp.InstructionIndex += 4
+		return comp.Step(input)
+	default:
+		log.Fatal("Error: unknown opcode: ", opcode)
+	}
+	// this should never be called b/c switch statement will always return
+	return -1
+}
+
+/*
+GetOpCodeAndIndexes will parse the instruction at comp.PuzzleInput[comp.InstructionIndex]
+- opcode will be the left two digits, mod by 100 will get that
+- rest of instructions will be grabbed via mod 10
+	- these also have to be parsed for the
+*/
+func (comp *Intcode) GetOpCodeAndIndexes() (int, [3]int) {
+	instruction := comp.PuzzleInput[comp.InstructionIndex]
+
+	// opcode is the lowest two digits, so mod by 100
+	opcode := instruction % 100
+	instruction /= 100
+
+	// assign the indexes that need to be read by reading the parameter modes
+	var paramIndexes [3]int
+	for i := 1; i <= 3 && comp.InstructionIndex+i < len(comp.PuzzleInput); i++ {
+		// grab the mode with a mod, last digit
+		mode := instruction % 10
+		instruction /= 10
+
+		switch mode {
+		case 1: // immediate mode, the index itself
+			paramIndexes[i-1] = comp.InstructionIndex + i
+		case 0: // position mode, index will be the value at the index
+			paramIndexes[i-1] = comp.PuzzleInput[comp.InstructionIndex+i]
+		}
+	}
+
+	return opcode, paramIndexes
 }
