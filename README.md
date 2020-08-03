@@ -12,5 +12,6 @@ Day | Name | Type of Algo & Notes
 4 | Secure Container | - May appear math-y, but it's really a string manipulation problem
 5 | Sunny with a Chance of Asteroids | - Yay more Intcode!........ <br> - This gave me fits... <br> - Good application for recursion (in my opinion)
 6 | Universal Orbit Map | - __Tree traversal__ and depth calculations. It's not quite a Graph, but it has a __directed graph__ algo feel too
-7 | Amplification Circuit | - More Intcode... Piping together multiple Intcode computers 😳😳😳 <br> - Refactored Intcode computer to an OOP approach so a single computer maintains its data <br> - Also requires making __permutations generator__ <br> - Some gymnastics to make this circular, but its easier with this OOP approach and the "objects"/instances of a struct maintaining their own data
-8 | Space Image Format | 3D Array manipulation
+7 | Amplification Circuit | - More Intcode... Piping together multiple Intcode computers 😳😳😳 <br> - Refactored Intcode computer to an OOP approach so a single computer maintains its data <br> - Also requires making __permutations generator__ <br> - Some gymnastics to make this circular, but its easier with this OOP approach and the "objects"/instances of a struct maintaining their own data <br> - Concurrency could be used to sync these Amps together...
+8 | Space Image Format | 3D Array manipulation, pretty straight forward
+9 | Sensor Boost | __MORE INTCODE. YAYY__ 🙃 <br> - A new parameter mode and opcode. <br> - __Really feeling the (tech) debt of some earlier design choices here, went back to refactor day07 before jumping into this one__
