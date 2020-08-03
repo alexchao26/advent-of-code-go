@@ -24,8 +24,8 @@ func main() {
 		inputNumbers[i], _ = strconv.Atoi(v)
 	}
 
-	// initialize a computer with a test mode input of `1`
-	comp := MakeComputer(inputNumbers, 1)
+	// initialize a computer with a senor boost input of `2`
+	comp := MakeComputer(inputNumbers, 2)
 	fmt.Println("BOOST keycode is", comp.LastOutput)
 }
 
