@@ -1,16 +1,14 @@
 package main
 
 import (
-	"bufio"
+	"adventofcode/util"
 	"fmt"
-	"log"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-type moon struct {
+// Moon stores coordinates and velocities of a moon
+type Moon struct {
 	x, y, z, dx, dy, dz int
 }
 type oneDim struct {
@@ -18,9 +16,8 @@ type oneDim struct {
 }
 
 func main() {
-	// stringSlice := readInputFile("../test2772.txt")
-	stringSlice := readInputFile("../input.txt")
-	// fmt.Println(stringSlice)
+	input := util.ReadFile("../input.txt")
+	stringSlice := strings.Split(input, "\n")
 
 	// need to set x y z, dx, dy, dz of each of the starting moons
 	sliceMoons := makeMoonSlice(stringSlice)
@@ -51,42 +48,25 @@ func main() {
 	fmt.Println(lcm2([]int{xSteps, ySteps, zSteps}))
 }
 
-// helper function to put the input file into a slice of strings (each elements is a line of the txt file)
-func readInputFile(path string) []string {
-	// var pixelString string
-	resultSlice := make([]string, 0)
-	absPath, _ := filepath.Abs(path)
-
-	file, err := os.Open(absPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		// pixelString = line
-		resultSlice = append(resultSlice, line)
-	}
-
-	// return pixelString
-	return resultSlice
-}
-
-// helper function to take the slice of strings and return a slice of moon structs
-func makeMoonSlice(stringSlice []string) []moon {
-	sliceMoons := make([]moon, 0)
+// helper function to take the slice of strings and return a slice of Moon structs
+func makeMoonSlice(stringSlice []string) []Moon {
+	sliceMoons := make([]Moon, 0)
 	for _, str := range stringSlice {
-		x := str[strings.Index(str, "x=")+2 : strings.Index(str, ",")]
-		// this is gross
-		y := str[strings.Index(str, "y=")+2 : strings.Index(str, "y=")+strings.Index(str[strings.Index(str, ",")+1:], ",")-1]
-		z := str[strings.Index(str, "z=")+2 : len(str)-1]
+		xStart := strings.Index(str, "x=") + 2
+		xEnd := strings.Index(str, ",")
+		yStart := xEnd + 4
+		zStart := strings.Index(str, "z=") + 2
+		yEnd := zStart - 4
+		zEnd := len(str) - 1
 
-		intx, _ := strconv.Atoi(x)
-		inty, _ := strconv.Atoi(y)
-		intz, _ := strconv.Atoi(z)
-		sliceMoons = append(sliceMoons, moon{intx, inty, intz, 0, 0, 0})
+		x := str[xStart:xEnd]
+		y := str[yStart:yEnd]
+		z := str[zStart:zEnd]
+
+		intX, _ := strconv.Atoi(x)
+		intY, _ := strconv.Atoi(y)
+		intZ, _ := strconv.Atoi(z)
+		sliceMoons = append(sliceMoons, Moon{intX, intY, intZ, 0, 0, 0})
 	}
 	return sliceMoons
 }

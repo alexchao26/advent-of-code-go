@@ -1,27 +1,23 @@
 package main
 
 import (
-	"bufio"
+	"adventofcode/util"
 	"fmt"
-	"log"
-	"math"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-type moon struct {
+// Moon stores coordinates and velocities of a moon
+type Moon struct {
 	x, y, z, dx, dy, dz int
 }
 
 func main() {
-	stringSlice := readInputFile("../input.txt")
-	// fmt.Println(stringSlice)
+	input := util.ReadFile("../input.txt")
+	stringSlice := strings.Split(input, "\n")
 
 	// need to set x y z, dx, dy, dz of each of the starting moons
 	sliceMoons := makeMoonSlice(stringSlice)
-	// fmt.Println(sliceMoons)
 
 	// iterate through for each step
 	for i := 0; i < 1000; i++ {
@@ -60,52 +56,36 @@ func main() {
 			sliceMoons[i2].y += e.dy
 			sliceMoons[i2].z += e.dz
 		}
-		// fmt.Println(sliceMoons)
 	}
 
-	// get final kinetic energy?
+	// get final kinetic energy
 	fmt.Println(kinetic(sliceMoons))
 }
 
-func readInputFile(path string) []string {
-	// var pixelString string
-	resultSlice := make([]string, 0)
-	absPath, _ := filepath.Abs(path)
-
-	file, err := os.Open(absPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		// pixelString = line
-		resultSlice = append(resultSlice, line)
-	}
-
-	// return pixelString
-	return resultSlice
-}
-
-func makeMoonSlice(stringSlice []string) []moon {
-	sliceMoons := make([]moon, 0)
+func makeMoonSlice(stringSlice []string) []Moon {
+	sliceMoons := make([]Moon, 0)
 	for _, str := range stringSlice {
-		x := str[strings.Index(str, "x=")+2 : strings.Index(str, ",")]
-		// this is gross
-		y := str[strings.Index(str, "y=")+2 : strings.Index(str, "y=")+strings.Index(str[strings.Index(str, ",")+1:], ",")-1]
-		z := str[strings.Index(str, "z=")+2 : len(str)-1]
+		xStart := strings.Index(str, "x=") + 2
+		xEnd := strings.Index(str, ",")
+		yStart := xEnd + 4
+		zStart := strings.Index(str, "z=") + 2
+		yEnd := zStart - 4
+		zEnd := len(str) - 1
 
-		intx, _ := strconv.Atoi(x)
-		inty, _ := strconv.Atoi(y)
-		intz, _ := strconv.Atoi(z)
-		sliceMoons = append(sliceMoons, moon{intx, inty, intz, 0, 0, 0})
+		x := str[xStart:xEnd]
+		y := str[yStart:yEnd]
+		z := str[zStart:zEnd]
+
+		intX, _ := strconv.Atoi(x)
+		intY, _ := strconv.Atoi(y)
+		intZ, _ := strconv.Atoi(z)
+		sliceMoons = append(sliceMoons, Moon{intX, intY, intZ, 0, 0, 0})
 	}
 	return sliceMoons
 }
 
-func kinetic(moons []moon) (result int) {
+// get total "kinetic energy" of a slice of Moons
+func kinetic(moons []Moon) (result int) {
 	for _, e := range moons {
 		sumXYZ := abs(e.x) + abs(e.y) + abs(e.z)
 		velXYZ := abs(e.dx) + abs(e.dy) + abs(e.dz)
@@ -115,6 +95,8 @@ func kinetic(moons []moon) (result int) {
 }
 
 func abs(value int) int {
-	flt := float64(value)
-	return int(math.Abs(flt))
+	if value < 0 {
+		return value * -1
+	}
+	return value
 }
