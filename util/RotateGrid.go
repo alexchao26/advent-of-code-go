@@ -16,3 +16,18 @@ func RotateGrid(grid [][]string) [][]string {
 	}
 	return rotated
 }
+
+// RotateGridInts will transpose a 2D array of ints
+func RotateGridInts(grid [][]int) [][]int {
+	rotated := make([][]int, len(grid[0]))
+	for i := range rotated {
+		rotated[i] = make([]int, len(grid))
+	}
+
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			rotated[len(grid[0])-1-j][i] = grid[i][j]
+		}
+	}
+	return rotated
+}
