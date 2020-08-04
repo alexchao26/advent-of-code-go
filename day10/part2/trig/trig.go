@@ -1,62 +1,40 @@
 package trig
 
-import (
-	"math"
-)
-
-// TangentAndDistance docz
-// startX will "always" be 13
-// startY will "always" be 11
-// 0 <= angleOffVery < 360
-func TangentAndDistance(startX, startY, endX, endY int) (angleOffVert, distance float64) {
-	rise, run := float64(endX)-float64(startX), float64(endY)-float64(startY)
-	// fmt.Println(rise, run)
-
-	// edge cases for verticals
-	if run == 0 && rise < 0 {
-		return 0, -1 * rise // endXY is up
-	}
-	if run == 0 && rise > 0 {
-		return 180, rise // endXY is down
-	}
-
-	// handle left or right?
-	if rise == 0 && run < 0 {
-		return 270, -1 * run // left
-	}
-	if rise == 0 && run > 0 {
-		return 90, run // right
-	}
-
-	// not verticals
-	// calculate return distance
-	distance = rise*rise + run*run
-	distance = math.Sqrt(distance)
-
-	// calculate arctangent which will be in radians
-	// determine quadrent
-	if rise < 0 && run > 0 { // top right
-		angleOffVert = -1 * math.Atan(run/rise) * 180 / math.Pi
-	} else if rise > 0 && run > 0 { // bottom right
-		angleOffVert = 90 + math.Atan(rise/run)*180/math.Pi
-	} else if rise > 0 && run < 0 { // bottom left
-		angleOffVert = 180 + -1*math.Atan(run/rise)*180/math.Pi
-	} else if rise < 0 && run < 0 { // top left
-		angleOffVert = 270 + math.Atan(rise/run)*180/math.Pi
-	}
-
-	return angleOffVert, distance
-}
+import "math"
 
 /*
 AngleOffVertical takes in two 2D points, it calculates the angle
-between the line between then and a vertical line. The angle
-returned is to the right of the vertical, i.e. from the vertical
-and through the (mathematical) first quadrant
+between the line and a vertical line (straight up from origin)
+NOTE: "up"/"top" and "down" are lexically flipped b/c of drawing a grid
+where 0, 0 is the top left corner and higher numbers physically go DOWN
+but lexically increase/go UP 🤦‍♂️
 */
 func AngleOffVertical(startX, startY, endX, endY int) float64 {
+	rise := float64(endX) - float64(startX)
+	run := float64(endY) - float64(startY)
 
-	return 0
+	var angle float64
+	// basically a big if/elseif/else block
+	switch {
+	case run == 0 && rise < 0: // up
+		angle = 0
+	case run == 0 && rise > 0: // down
+		angle = 180
+	case rise == 0 && run < 0: // left
+		angle = 270
+	case rise == 0 && run > 0: // right
+		angle = 90
+	case rise < 0 && run > 0: // top right
+		angle = -1 * math.Atan(run/rise) * 180 / math.Pi
+	case rise > 0 && run > 0: // bottom right
+		angle = 90 + math.Atan(rise/run)*180/math.Pi
+	case rise > 0 && run < 0: // bottom left
+		angle = 180 + -1*math.Atan(run/rise)*180/math.Pi
+	case rise < 0 && run < 0: // top left
+		angle = 270 + math.Atan(rise/run)*180/math.Pi
+	}
+
+	return angle
 }
 
 // Distance calculates the distance between two sets of 2D coordinates via Pythagorean's theorem

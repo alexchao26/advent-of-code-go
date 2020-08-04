@@ -10,7 +10,7 @@ import (
 )
 
 /*
-	Overall approach...
+	Overall approach:
 	- need to make a map of some kind
 		make it a slice where each element is a struct
 			- each struct will contain:
@@ -36,8 +36,8 @@ type Asteroid struct {
 
 func main() {
 	// read input.txt file, split it into a slice of lines
-	contents := util.ReadFile("../input.txt") // test/example case @ "./test.txt"
-	stringSlice := strings.Split(contents, "\n")
+	input := util.ReadFile("../input.txt")
+	stringSlice := strings.Split(input, "\n")
 
 	// generate 2D grid of each character from stringSlice
 	inputGrid := make([][]string, len(stringSlice))
@@ -45,18 +45,7 @@ func main() {
 		inputGrid[i] = strings.Split(str, "")
 	}
 
-	//* tests while building the TangetAndDistance function
-	// fmt.Println(trig.TangentAndDistance(13, 11, 0, 11))  // 0 13
-	// fmt.Println(trig.TangentAndDistance(13, 11, 15, 11)) // 180 2
-	// fmt.Println(trig.TangentAndDistance(13, 11, 13, 16)) // 90 5
-	// fmt.Println(trig.TangentAndDistance(13, 11, 13, 9))  // 270 2
-	// fmt.Println(trig.TangentAndDistance(1, 1, 0, 2)) // 45 some sqrt
-	// fmt.Println(trig.TangentAndDistance(1, 1, 2, 2)) // 135 some sqrt
-	// fmt.Println(trig.TangentAndDistance(1, 1, 2, 0)) // 225 some sqrt
-	// fmt.Println(trig.TangentAndDistance(1, 1, 0, 0)) // 315 some sqrt
-
 	allAsteroids := makeAsteroidsSlice(inputGrid)
-	// fmt.Println(allAsteroids)
 
 	// need to start this just to the left of zero to get that as the first input
 	lastDegreeUsed := 359.999999
@@ -105,9 +94,6 @@ func main() {
 			// if we pass over 360, subtract 360
 			lastDegreeUsed -= 360
 		}
-		// fmt.Println(minDegDiff)
-		// fmt.Println("lastAsteroid", i, lastAsteroid)
-		// fmt.Println(indexOfAsteroidToDelete, allAsteroids[indexOfAsteroidToDelete])
 	}
 
 	// print the last used asteroid
@@ -125,13 +111,13 @@ func makeAsteroidsSlice(grid [][]string) []Asteroid {
 			// if an asteroid is found...
 			if element == "#" && !(rowIndex == 13 && colIndex == 11) {
 				// calculate the degree and dist
-				degree, dist := trig.TangentAndDistance(13, 11, rowIndex, colIndex)
+				// degree, dist := trig.TangentAndDistance(13, 11, rowIndex, colIndex)
 				// create an instance of an Asteroid struct and append it to the result slice
 				ast := Asteroid{
 					x:          rowIndex,
 					y:          colIndex,
-					degOffVert: degree,
-					distance:   dist,
+					degOffVert: trig.AngleOffVertical(13, 11, rowIndex, colIndex),
+					distance:   trig.Distance(13, 11, rowIndex, colIndex),
 				}
 				result = append(result, ast)
 			}
