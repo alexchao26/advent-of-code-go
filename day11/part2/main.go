@@ -1,6 +1,9 @@
 /*
-IntcodeX struct is defined within this file
-MakePermutations is in the util package as that will likely be reused
+Intcode struct is defined within this file
+Robot struct contains coordinates and robot's directions
+	- methods can Move the robot based on its brain's (intcode comp.) output
+Draw function generates a string to display in terminal
+	- helper functions remove some whitespace and rotate the grid/matrix
 */
 
 package main
@@ -16,6 +19,7 @@ import (
 func main() {
 	// read the input file, modify it to a slice of numbers
 	inputFile := util.ReadFile("../input.txt")
+
 	splitStrings := strings.Split(inputFile, ",")
 
 	inputNumbers := make([]int, len(splitStrings))
@@ -23,33 +27,133 @@ func main() {
 		inputNumbers[i], _ = strconv.Atoi(v)
 	}
 
-	// initialize emergency hull painting robot's brain with a 0 for black tile
-	robotBrain := MakeComputerX(inputNumbers)
-
-	// make a robot to find the bounds of movement first
+	// initialize a computer with a senor boost input of `2`
+	robotBrain := MakeComputer(inputNumbers)
 	robot := MakeRobot(0, 0)
 
+	// initialize starting coordinates to a white panel, i.e. 1
+	robot.MapCoordsToColor["0,0"] = 1
+
+	// let robot paint entire map
 	for robotBrain.IsRunning {
-		// a StepX produces two outputs
-		go robotBrain.StepX()
-		coords := fmt.Sprintf("%v,%v", robot.x, robot.y)
+		// get the current color from the robot's map
+		currentCoords := fmt.Sprintf("%v,%v", robot.x, robot.y)
+		currentColor := robot.MapCoordsToColor[currentCoords]
+		robotBrain.Step(currentColor)
 
-		fmt.Println("writing to brain", coords, robot.MapCoordsToColor[coords])
-		robotBrain.InputChannel <- robot.MapCoordsToColor[coords]
+		// get outputs from the robot's brain (Intcode)
+		lenOutputs := len(robotBrain.Outputs)
+		color := robotBrain.Outputs[lenOutputs-2]
+		direction := robotBrain.Outputs[lenOutputs-1]
 
-		color, direction := <-robotBrain.OutputChannel, <-robotBrain.OutputChannel
-		fmt.Printf("color %v, direction %v\n", color, direction)
-
-		// "paint" in the robot map, move the robot
-		robot.MapCoordsToColor[coords] = color
+		// "paint"/update robot's Map and move the robot
+		robot.MapCoordsToColor[currentCoords] = color
 		robot.MoveRobot(direction)
-		fmt.Println(robot)
 	}
-	// then make a 2D grid based on the bounds, then
-	fmt.Printf("Total tiles painted: %v\n", len(robot.MapCoordsToColor))
+
+	// pass robot.MapCoordsToColor to a "drawing" function
+	output := Draw(robot.MapCoordsToColor)
+	fmt.Println(output)
 }
 
-// Robot contains information on the emergency hill painting robot
+// Draw will return a multiline string using mapCoordsToColor to determine
+// which cells should be colored white (1) or black/empty (0)
+func Draw(mapCoordsToColor map[string]int) string {
+	var lowX, highX, lowY, highY int
+	for key := range mapCoordsToColor {
+		coords := strings.Split(key, ",")
+		x, _ := strconv.Atoi(coords[0])
+		y, _ := strconv.Atoi(coords[1])
+		switch {
+		case x < lowX:
+			lowX = x
+		case x > highX:
+			highX = x
+		}
+		switch {
+		case y < lowY:
+			lowY = y
+		case y > highY:
+			highY = y
+		}
+	}
+
+	// Determine the bounds of the grid
+	edgeLength := 2 * util.MaxInts(-lowY, -lowX, highY, highX)
+
+	grid := make([][]string, edgeLength)
+	for i := 0; i < edgeLength; i++ {
+		// each character will initialize as a space character
+		grid[i] = make([]string, edgeLength)
+		for j := range grid[i] {
+			grid[i][j] = " "
+		}
+	}
+
+	// Iterate through all coordinates and transcribe x,y onto a 2D grid
+	// where the math is a little different...
+	for key, val := range mapCoordsToColor {
+		// key is string coords
+		coords := strings.Split(key, ",")
+		x, _ := strconv.Atoi(coords[0])
+		y, _ := strconv.Atoi(coords[1])
+		x += edgeLength / 2
+		y += edgeLength / 2
+		// val is color to paint (1 or 0)
+		if val == 1 {
+			grid[x][y] = "#"
+		}
+	}
+
+	// trim off due to making the initial grid too large
+	grid = trim(grid)
+	// rotate it because of how I coded up the robot's coordinates :/
+	grid = util.RotateGrid(grid)
+	// retrim
+	grid = trim(grid)
+
+	// combine each layer into an individual string via join w/ empty string
+	helpMakeFinalString := make([]string, len(grid))
+	for i := range helpMakeFinalString {
+		helpMakeFinalString[i] = strings.Join(grid[i], "")
+	}
+
+	// join all levels together with newlines
+	return strings.Join(helpMakeFinalString, "\n")
+}
+
+// helper function for Draw to remove whitespace from overestimating the size
+// of the drawing space
+func trim(grid [][]string) [][]string {
+	// remove all empty rows at top and bottom
+removeRowsTop:
+	for i := 0; i < len(grid); {
+		for j := 0; j < len(grid[i]); j++ {
+			if grid[i][j] != " " {
+				break removeRowsTop
+			}
+		}
+		grid = grid[1:]
+	}
+
+	// remove empty columns on left
+removeColsLeft:
+	for i := 0; i < len(grid[0]); {
+		for j := 0; j < len(grid); j++ {
+			if grid[j][i] != " " {
+				break removeColsLeft
+			}
+		}
+		// if loop hasn't broken out, iterate over first "column" and slice off "0-index"
+		for j := 0; j < len(grid); j++ {
+			grid[j] = grid[j][1:]
+		}
+	}
+
+	return grid
+}
+
+// Robot struct, x and y are coordinate system based, NOT 2D array 0-indexed
 type Robot struct {
 	x                int
 	y                int
@@ -103,83 +207,86 @@ func (robot *Robot) MoveRobot(direction int) {
 }
 
 /*
-IntcodeX is an OOP approach *************************************************
-MakeComputerX is equivalent to the constructor
-StepX takes in an input int and updates properties in the computer:
+Intcode is an OOP approach *************************************************
+MakeComputer is equivalent to the constructor
+Step takes in an input int and updates properties in the computer:
 	- InstructionIndex: where to read the next instruction from
 	- LastOutput, what the last opcode 4 outputted
 	- PuzzleIndex based if the last instruction modified the puzzle at all
 ****************************************************************************/
-type IntcodeX struct {
-	PuzzleInput      []int    // file/puzzle input parsed into slice of ints
-	InstructionIndex int      // stores the index where the next instruction is
-	RelativeBase     int      // relative base for opcode 9 and param mode 2
-	LastOutput       int      // last output from an opcode 4
-	IsRunning        bool     // will be true until a 99 opcode is hit
-	InputChannel     chan int // for inputs to computer
-	OutputChannel    chan int // for recording all output
+type Intcode struct {
+	PuzzleInput      []int // file/puzzle input parsed into slice of ints
+	InstructionIndex int   // stores the index where the next instruction is
+	RelativeBase     int   // relative base for opcode 9 and param mode 2
+	Outputs          []int // stores all outputs
+	IsRunning        bool  // will be true until a 99 opcode is hit
 }
 
-// MakeComputerX initializes a new comp
-func MakeComputerX(puzzleInput []int) IntcodeX {
-	puzzleInputCopy := make([]int, len(puzzleInput))
-	copy(puzzleInputCopy, puzzleInput)
+// MakeComputer initializes a new comp
+func MakeComputer(PuzzleInput []int) Intcode {
+	puzzleInputCopy := make([]int, len(PuzzleInput))
+	copy(puzzleInputCopy, PuzzleInput)
 
-	comp := IntcodeX{
+	comp := Intcode{
 		puzzleInputCopy,
 		0,
 		0,
-		0,
+		make([]int, 0),
 		true,
-		make(chan int),
-		make(chan int),
 	}
-
 	return comp
 }
 
-// StepX will read the next 4 values in the input `sli` and make updates
+// Step will read the next 4 values in the input `sli` and make updates
 // according to the opcodes
-func (comp *IntcodeX) StepX() {
+func (comp *Intcode) Step(input int) {
 	// read the instruction, opcode and the indexes where the params point to
 	opcode, paramIndexes := comp.GetOpCodeAndParamIndexes()
 	param1, param2, param3 := paramIndexes[0], paramIndexes[1], paramIndexes[2]
 
 	// ensure params are within the bounds of PuzzleInput, resize if necessary
-	comp.ResizeMemory(param1, param2, param3)
+	// Note: need to optimize this to not resize if the params are not being used
+	switch opcode {
+	case 1, 2, 7, 8:
+		comp.ResizeMemory(param1, param2, param3)
+	case 5, 6:
+		comp.ResizeMemory(param1, param2)
+	case 3, 4, 9:
+		comp.ResizeMemory(param1)
+	}
 
 	switch opcode {
 	case 99: // 99: Terminates program
-		// fmt.Println("Terminating...")
+		fmt.Println("Terminating...")
 		comp.IsRunning = false
-		// also close output channel
-		close(comp.OutputChannel)
 	case 1: // 1: Add next two paramIndexes, store in third
 		comp.PuzzleInput[param3] = comp.PuzzleInput[param1] + comp.PuzzleInput[param2]
 		comp.InstructionIndex += 4
-		go comp.StepX()
+		comp.Step(input)
 	case 2: // 2: Multiply next two and store in third
 		comp.PuzzleInput[param3] = comp.PuzzleInput[param1] * comp.PuzzleInput[param2]
 		comp.InstructionIndex += 4
-		go comp.StepX()
+		comp.Step(input)
 	case 3: // 3: Takes one input and saves it to position of one parameter
-		// read an input from input channel
-		input := <-comp.InputChannel
+		// check if input has already been used (i.e. input == -1)
+		// if it's been used, return out to prevent further Steps
+		// NOTE: making a big assumption that -1 will never be an input...
+		if input == -1 {
+			return
+		}
 
 		// else recurse with a -1 to signal the initial input has been processed
 		comp.PuzzleInput[param1] = input
 		comp.InstructionIndex += 2
-		go comp.StepX()
+		comp.Step(-1)
 	case 4: // 4: outputs its input value
 		// set LastOutput of the computer & log it
-		comp.LastOutput = comp.PuzzleInput[param1]
+		comp.Outputs = append(comp.Outputs, comp.PuzzleInput[param1])
 		// fmt.Printf("Opcode 4 output: %v\n", comp.LastOutput)
 		comp.InstructionIndex += 2
 
-		// write to output channel
-		comp.OutputChannel <- comp.LastOutput
 		// continue running until terminates or asks for another input
-		go comp.StepX()
+		comp.Step(input)
 	// 5: jump-if-true: if first param != 0, move pointer to second param, else nothing
 	case 5:
 		if comp.PuzzleInput[param1] != 0 {
@@ -187,7 +294,7 @@ func (comp *IntcodeX) StepX() {
 		} else {
 			comp.InstructionIndex += 3
 		}
-		go comp.StepX()
+		comp.Step(input)
 	// 6: jump-if-false, if first param == 0 then set instruction pointer to 2nd param, else nothing
 	case 6:
 		if comp.PuzzleInput[param1] == 0 {
@@ -195,7 +302,7 @@ func (comp *IntcodeX) StepX() {
 		} else {
 			comp.InstructionIndex += 3
 		}
-		go comp.StepX()
+		comp.Step(input)
 	// 7: less-than, if param1 < param2 then store 1 in postion of 3rd param, else store 0
 	case 7:
 		if comp.PuzzleInput[param1] < comp.PuzzleInput[param2] {
@@ -204,7 +311,7 @@ func (comp *IntcodeX) StepX() {
 			comp.PuzzleInput[param3] = 0
 		}
 		comp.InstructionIndex += 4
-		go comp.StepX()
+		comp.Step(input)
 	// 8: equals, if param1 == param2 then set position of 3rd param to 1, else store 0
 	case 8:
 		if comp.PuzzleInput[param1] == comp.PuzzleInput[param2] {
@@ -213,12 +320,12 @@ func (comp *IntcodeX) StepX() {
 			comp.PuzzleInput[param3] = 0
 		}
 		comp.InstructionIndex += 4
-		go comp.StepX()
+		comp.Step(input)
 	// 9: adjust relative base
 	case 9:
 		comp.RelativeBase += comp.PuzzleInput[param1]
 		comp.InstructionIndex += 2
-		go comp.StepX()
+		comp.Step(input)
 	default:
 		log.Fatalf("Error: unknown opcode %v at index %v", opcode, comp.PuzzleInput[comp.InstructionIndex])
 	}
@@ -230,7 +337,7 @@ GetOpCodeAndParamIndexes will parse the instruction at comp.PuzzleInput[comp.Ins
 - rest of instructions will be grabbed via mod 10
 	- these also have to be parsed for the
 */
-func (comp *IntcodeX) GetOpCodeAndParamIndexes() (int, [3]int) {
+func (comp *Intcode) GetOpCodeAndParamIndexes() (int, [3]int) {
 	instruction := comp.PuzzleInput[comp.InstructionIndex]
 
 	// opcode is the lowest two digits, so mod by 100
@@ -258,20 +365,19 @@ func (comp *IntcodeX) GetOpCodeAndParamIndexes() (int, [3]int) {
 }
 
 // ResizeMemory will take any number of integers and resize the computer's memory appropriately
-func (comp *IntcodeX) ResizeMemory(sizes ...int) {
-	fmt.Println("resizing", sizes)
+func (comp *Intcode) ResizeMemory(sizes ...int) {
 	// get largest of input sizes
-	maxArgSize := sizes[0]
+	maxArg := sizes[0]
 	for _, v := range sizes {
-		if v > maxArgSize {
-			maxArgSize = v
+		if v > maxArg {
+			maxArg = v
 		}
 	}
 
 	// resize if PuzzleInput's length is shorter
-	if maxArgSize > len(comp.PuzzleInput) {
+	if maxArg >= len(comp.PuzzleInput) {
 		// make empty slice to copy into, of the new, larger size
-		resizedPuzzleInput := make([]int, maxArgSize)
+		resizedPuzzleInput := make([]int, maxArg+1)
 		// copy old puzzle input values in
 		copy(resizedPuzzleInput, comp.PuzzleInput)
 
