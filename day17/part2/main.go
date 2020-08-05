@@ -11,6 +11,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -92,8 +93,7 @@ func main() {
 	}
 
 	// finally, asks for continuous video feed or not 'y' or 'n' and a new line
-	// NOTE making this 'y' will cause a stack overflow with my recursive implementation :(
-	robot.computer.Step(int('n'))
+	robot.computer.Step(int('y'))
 	robot.computer.Step(newline)
 
 	fmt.Println("Dust collected", robot.computer.Outputs[len(robot.computer.Outputs)-1])
@@ -174,120 +174,103 @@ func MakeComputer(PuzzleInput []int) *Intcode {
 
 // Step will read the next 4 values in the input `sli` and make updates
 // according to the opcodes
+// Update to run iteratively (while the computer is running)
+// it will also return out if a -1 input is asked for
+// then call Step again to provide the next input, or run with -1 from the start
+//   to run the computer until it asks for an input OR terminates
 func (comp *Intcode) Step(input int) {
-	// read the instruction, opcode and the indexes where the params point to
-	opcode, paramIndexes := comp.GetOpCodeAndParamIndexes()
-	param1, param2, param3 := paramIndexes[0], paramIndexes[1], paramIndexes[2]
+	for comp.IsRunning {
+		// read the instruction, opcode and the indexes where the params point to
+		opcode, paramIndexes := comp.GetOpCodeAndParamIndexes()
+		param1, param2, param3 := paramIndexes[0], paramIndexes[1], paramIndexes[2]
 
-	// ensure params are within the bounds of PuzzleInput, resize if necessary
-	switch opcode {
-	case 1, 2, 7, 8:
-		comp.ResizeMemory(param1, param2, param3)
-	case 5, 6:
-		comp.ResizeMemory(param1, param2)
-	case 3, 4, 9:
-		comp.ResizeMemory(param1)
-	}
-
-	switch opcode {
-	case 99: // 99: Terminates program
-		fmt.Println("Terminating...")
-		comp.IsRunning = false
-	case 1: // 1: Add next two paramIndexes, store in third
-		comp.PuzzleInput[param3] = comp.PuzzleInput[param1] + comp.PuzzleInput[param2]
-		comp.InstructionIndex += 4
-		comp.Step(input)
-	case 2: // 2: Multiply next two and store in third
-		comp.PuzzleInput[param3] = comp.PuzzleInput[param1] * comp.PuzzleInput[param2]
-		comp.InstructionIndex += 4
-		comp.Step(input)
-	case 3: // 3: Takes one input and saves it to position of one parameter
-		// check if input has already been used (i.e. input == -1)
-		// if it's been used, return out to prevent further Steps
-		// NOTE: making a big assumption that -1 will never be an input...
-		if input == -1 {
-			return
+		// ensure params are within the bounds of PuzzleInput, resize if necessary
+		switch opcode {
+		case 1, 2, 7, 8:
+			comp.ResizeMemory(param1, param2, param3)
+		case 5, 6:
+			comp.ResizeMemory(param1, param2)
+		case 3, 4, 9:
+			comp.ResizeMemory(param1)
 		}
 
-		// else recurse with a -1 to signal the initial input has been processed
-		comp.PuzzleInput[param1] = input
-		comp.InstructionIndex += 2
-		comp.Step(-1)
-	case 4: // 4: outputs its input value
-		// set LastOutput of the computer & log it
-		comp.Outputs = append(comp.Outputs, comp.PuzzleInput[param1])
-		// fmt.Println("Output", comp.PuzzleInput[param1])
+		switch opcode {
+		case 99: // 99: Terminates program
+			fmt.Println("Terminating...")
+			comp.IsRunning = false
+		case 1: // 1: Add next two paramIndexes, store in third
+			comp.PuzzleInput[param3] = comp.PuzzleInput[param1] + comp.PuzzleInput[param2]
+			comp.InstructionIndex += 4
+		case 2: // 2: Multiply next two and store in third
+			comp.PuzzleInput[param3] = comp.PuzzleInput[param1] * comp.PuzzleInput[param2]
+			comp.InstructionIndex += 4
+		case 3: // 3: Takes one input and saves it to position of one parameter
+			// check if input has already been used (i.e. input == -1)
+			// if it's been used, return out to prevent further Steps
+			// NOTE: making a big assumption that -1 will never be an input...
+			if input == -1 {
+				return
+			}
 
-		// TODO come back to this b/c the entire Intcode machine needs to be made not-recursive
-		// todo   for this to not blow the call stack
-		// // NOTE uncomment to view robot moving around floor
-		// if len(comp.Outputs) == 1967 {
-		// 	var row int
-		// 	floorGrid := [][]string{[]string{}}
-		// 	for _, v := range comp.Outputs {
-		// 		switch v {
-		// 		case 10:
-		// 			row++
-		// 			floorGrid = append(floorGrid, []string{})
-		// 		default:
-		// 			tileType := string(v)
-		// 			floorGrid[row] = append(floorGrid[row], tileType)
-		// 		}
-		// 	}
+			// else recurse with a -1 to signal the initial input has been processed
+			comp.PuzzleInput[param1] = input
+			comp.InstructionIndex += 2
 
-		// 	for _, v := range floorGrid {
-		// 		fmt.Println(v)
-		// 	}
-		// 	fmt.Println("")
-		// 	comp.Outputs = []int{}
-		// 	time.Sleep(time.Second)
-		// }
+			// change the input value so the next time a 3 opcode is hit, will return out
+			input = -1
+		case 4: // 4: outputs its input value
+			output := comp.PuzzleInput[param1]
+			// set LastOutput of the computer & log it
+			comp.Outputs = append(comp.Outputs, output)
 
-		comp.InstructionIndex += 2
+			// NOTE this is specific to day17 to print the robot walking around the scaffold
+			// if the last two outputs are newlines (ASCII 10's), print out the output
+			// then just clear the output to make life easy
+			if output == 10 && comp.Outputs[len(comp.Outputs)-2] == 10 {
+				Print2DGrid(comp.Outputs)
+				// clear outputs slice, sleep for 100ms
+				comp.Outputs = []int{}
+				time.Sleep(time.Millisecond * 100)
+			}
 
-		// continue running until terminates or asks for another input
-		comp.Step(input)
-	// 5: jump-if-true: if first param != 0, move pointer to second param, else nothing
-	case 5:
-		if comp.PuzzleInput[param1] != 0 {
-			comp.InstructionIndex = comp.PuzzleInput[param2]
-		} else {
-			comp.InstructionIndex += 3
+			comp.InstructionIndex += 2
+		// 5: jump-if-true: if first param != 0, move pointer to second param, else nothing
+		case 5:
+			if comp.PuzzleInput[param1] != 0 {
+				comp.InstructionIndex = comp.PuzzleInput[param2]
+			} else {
+				comp.InstructionIndex += 3
+			}
+		// 6: jump-if-false, if first param == 0 then set instruction pointer to 2nd param, else nothing
+		case 6:
+			if comp.PuzzleInput[param1] == 0 {
+				comp.InstructionIndex = comp.PuzzleInput[param2]
+			} else {
+				comp.InstructionIndex += 3
+			}
+		// 7: less-than, if param1 < param2 then store 1 in postion of 3rd param, else store 0
+		case 7:
+			if comp.PuzzleInput[param1] < comp.PuzzleInput[param2] {
+				comp.PuzzleInput[param3] = 1
+			} else {
+				comp.PuzzleInput[param3] = 0
+			}
+			comp.InstructionIndex += 4
+		// 8: equals, if param1 == param2 then set position of 3rd param to 1, else store 0
+		case 8:
+			if comp.PuzzleInput[param1] == comp.PuzzleInput[param2] {
+				comp.PuzzleInput[param3] = 1
+			} else {
+				comp.PuzzleInput[param3] = 0
+			}
+			comp.InstructionIndex += 4
+		// 9: adjust relative base
+		case 9:
+			comp.RelativeBase += comp.PuzzleInput[param1]
+			comp.InstructionIndex += 2
+		default:
+			log.Fatalf("Error: unknown opcode %v at index %v", opcode, comp.PuzzleInput[comp.InstructionIndex])
 		}
-		comp.Step(input)
-	// 6: jump-if-false, if first param == 0 then set instruction pointer to 2nd param, else nothing
-	case 6:
-		if comp.PuzzleInput[param1] == 0 {
-			comp.InstructionIndex = comp.PuzzleInput[param2]
-		} else {
-			comp.InstructionIndex += 3
-		}
-		comp.Step(input)
-	// 7: less-than, if param1 < param2 then store 1 in postion of 3rd param, else store 0
-	case 7:
-		if comp.PuzzleInput[param1] < comp.PuzzleInput[param2] {
-			comp.PuzzleInput[param3] = 1
-		} else {
-			comp.PuzzleInput[param3] = 0
-		}
-		comp.InstructionIndex += 4
-		comp.Step(input)
-	// 8: equals, if param1 == param2 then set position of 3rd param to 1, else store 0
-	case 8:
-		if comp.PuzzleInput[param1] == comp.PuzzleInput[param2] {
-			comp.PuzzleInput[param3] = 1
-		} else {
-			comp.PuzzleInput[param3] = 0
-		}
-		comp.InstructionIndex += 4
-		comp.Step(input)
-	// 9: adjust relative base
-	case 9:
-		comp.RelativeBase += comp.PuzzleInput[param1]
-		comp.InstructionIndex += 2
-		comp.Step(input)
-	default:
-		log.Fatalf("Error: unknown opcode %v at index %v", opcode, comp.PuzzleInput[comp.InstructionIndex])
 	}
 }
 
@@ -343,5 +326,25 @@ func (comp *Intcode) ResizeMemory(sizes ...int) {
 
 		// overwrite puzzle input
 		comp.PuzzleInput = resizedPuzzleInput
+	}
+}
+
+// Print2DGrid is day17 specific. allValues are ASCII ints including 10 for newline
+func Print2DGrid(allValues []int) {
+	var row int
+	floorGrid := [][]string{[]string{}}
+	for _, v := range allValues {
+		switch v {
+		case 10:
+			row++
+			floorGrid = append(floorGrid, []string{})
+		default:
+			tileType := string(v)
+			floorGrid[row] = append(floorGrid[row], tileType)
+		}
+	}
+
+	for _, v := range floorGrid {
+		fmt.Println(v)
 	}
 }
