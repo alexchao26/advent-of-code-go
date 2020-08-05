@@ -31,6 +31,7 @@ func main() {
 	// run through 100 phases, overwriting digits
 	for i := 0; i < 100; i++ {
 		digits = getNextOutputNumber(digits)
+		// output a time to make sure this is running fast enough
 		fmt.Printf("output received at %v, %v to go\n", time.Now(), 100-i-1)
 	}
 
@@ -40,21 +41,19 @@ func main() {
 		firstEightDigits *= 10
 		firstEightDigits += digits[i+offsetIndex]
 	}
-	fmt.Printf("Offset 8 digits after 100 phases: %v\n", firstEightDigits)
-	// fmt.Println("Expect 84462026 for test")
+	fmt.Printf("\nOffset 8 digits after 100 phases: %v\n", firstEightDigits)
+	fmt.Println("Expect 84462026 for test, 36265589 for actual input")
 }
 
 // takes in digits and all patterns, generates next set of digits
 func getNextOutputNumber(digits []int) []int {
-	// calculate the sum of partial subsets digits[0:i]
-	partials := make([]int, len(digits))
+	// ONE INDEX THE PARTIAL SUMS, so partials[0] = 0, partials[1] = digits[0]
+	partials := make([]int, len(digits)+1)
 	for i := range digits {
 		// add previous partial subset if i is not zero
-		if i > 0 {
-			partials[i] += partials[i-1]
-		}
+		partials[i+1] += partials[i]
 		// add digit on as well
-		partials[i] += digits[i]
+		partials[i+1] += digits[i]
 	}
 
 	output := make([]int, len(digits))
@@ -64,31 +63,26 @@ func getNextOutputNumber(digits []int) []int {
 		adding := true
 		for start := i; start < len(digits); start += chunkLength * 2 {
 			// calculate chunk sum
-			startOfChunkIndex := start - 1
-			if startOfChunkIndex < 0 {
-				startOfChunkIndex = 0
-			}
+			startOfChunkIndex := chunkLength - 1
 			endOfChunkIndex := start + chunkLength - 1
 			if endOfChunkIndex >= len(digits) {
 				endOfChunkIndex = len(digits) - 1
 			}
 			chunkSum := partials[endOfChunkIndex] - partials[startOfChunkIndex]
-			if chunkLength == 1 {
-				chunkSum = digits[start]
-			}
 
+			// increment or decrements output index
 			if adding {
-				// fmt.Printf("adding: %v\n", chunkSum)
 				output[i] += chunkSum
 			} else {
-				// fmt.Printf("subtracting: %v\n", chunkSum)
 				output[i] -= chunkSum
 			}
 			adding = !adding
 		}
 	}
 
-	// make all output digits positive
+	// make all output digits positive & single digits
+	// NOTE this is not equivalent to taking the mod of a negative number!
+	// This has to be done because of the problem's spec to just take the 1's digit
 	for i, v := range output {
 		if v < 0 {
 			output[i] *= -1
