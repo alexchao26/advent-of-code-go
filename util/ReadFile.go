@@ -28,7 +28,7 @@ func ReadFile(pathFromCaller string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// trim off new lines at end of input files
+	// trim off new lines and tabs at end of input files
 	strContent := string(content)
-	return strings.TrimSpace(strContent)
+	return strings.TrimRight(strContent, "\n")
 }
