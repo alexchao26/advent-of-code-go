@@ -25,72 +25,40 @@ func main() {
 		inputNumbers[i], _ = strconv.Atoi(v)
 	}
 
-	// x, y := 1135, 1625
+	// wrapper to produce drones
+	deployDrone := droneFactory(inputNumbers)
 
-	allHorizontalRanges := [][2]int{
-		[2]int{0, 1},
-	}
-
-	for len(allHorizontalRanges) < 5000 {
-		startOfLastRange := allHorizontalRanges[len(allHorizontalRanges)-1][0]
-		horizontalRange := getHorizontalRange(inputNumbers, startOfLastRange, len(allHorizontalRanges))
-		allHorizontalRanges = append(allHorizontalRanges, horizontalRange)
-
-		if len(allHorizontalRanges) > 100 {
-			// indexes of the current line and 100 rows up
-			currentIndex := len(allHorizontalRanges) - 1
-			index100RowsUp := len(allHorizontalRanges) - 100
-
-			// check if a square can fit from the start of the current range to the end of the range 100 rows up
-			if allHorizontalRanges[index100RowsUp][1]-allHorizontalRanges[currentIndex][0] >= 99 {
-				// Print the AoC format
-				fmt.Println("AoC answer:", allHorizontalRanges[currentIndex][0]*10000+index100RowsUp)
-
-				break
+	// follow the bottom edge of the tractor beam
+	for y := 100; ; {
+		for x := 0; ; {
+			// fmt.Printf("Coordinates x: %v, y %v\n", x, y)
+			if !deployDrone(x, y) {
+				// cell not being pulled, move right
+				x++
+				// cell being pulled, check 2 spots, 100 up & 100 up and right
+			} else {
+				if deployDrone(x, y-99) && deployDrone(x+99, y-99) {
+					fmt.Println("Top left of 100x100 square is:", x, y-99)
+					return
+				}
+				// otherwise move down
+				y++
 			}
 		}
 	}
 }
 
-func getHorizontalRange(inputNumbers []int, startX, y int) [2]int {
-	horizontalRange := [2]int{}
+// takes in the inputNumbers, returns a function that initializes a new intcode computer
+// returned function takes in x and y values, returns true if that cell is being "pulled"
+func droneFactory(inputNumbers []int) func(int, int) bool {
+	return func(x, y int) bool {
+		drone := MakeComputer(inputNumbers)
+		drone.Step(x)
+		drone.Step(y)
+		lastOutput := drone.Outputs[len(drone.Outputs)-1]
 
-	var lastOutput int
-
-	// step until the output is a one
-	// OR exit condition of 10 cells have all returned zeroes (this will apply for some of the first levels)
-	for x := startX; lastOutput == 0; x++ {
-		lastOutput = makeDroneAndTest(inputNumbers, x, y)
-		// when the first element is found that is "pulled", set the start of the range
-		if lastOutput == 1 {
-			horizontalRange[0] = x
-		}
-
-		// NOTE edge case for the first few rows if none of the drones are pulled
-		if x > startX+20 {
-			return [2]int{0, 0}
-		}
-
+		return lastOutput == 1
 	}
-
-	for x := horizontalRange[0] + 1; lastOutput != 0; x++ {
-		lastOutput = makeDroneAndTest(inputNumbers, x, y)
-
-		if lastOutput == 0 {
-			horizontalRange[1] = x - 1
-		}
-	}
-
-	return horizontalRange
-}
-
-func makeDroneAndTest(inputNumbers []int, x, y int) int {
-	drone := MakeComputer(inputNumbers)
-	drone.Step(x)
-	drone.Step(y)
-	lastOutput := drone.Outputs[len(drone.Outputs)-1]
-
-	return lastOutput
 }
 
 /*
