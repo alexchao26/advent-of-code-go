@@ -17,31 +17,39 @@ func main() {
 		grid[i] = strings.Split(v, "")
 
 		// * Uncomment to print the input
-		fmt.Println(grid[i])
+		// fmt.Println(i-2, grid[i])
 	}
 
-	dijkstra := MakeDijkstraGrid(grid)
-	fmt.Println("initial dijkstra queue", dijkstra.queue)
+	dijkstra := MakeDijkstraRecursive(grid)
 
+	for !dijkstra.handleFrontOfQueue() {
+		// * Uncomment to watch the queue length grow
+		// fmt.Println("  QUEUE LENGTH ", len(dijkstra.queue))
+	}
+
+	finalLayer, finalRow, finalCol := 0, dijkstra.finishCoordinates[0], dijkstra.finishCoordinates[1]
+
+	fmt.Println("Distance to ZZ", dijkstra.layers[finalLayer].grid[finalRow][finalCol].distance)
 }
 
-// Dijkstra struct stores the 2D grid of nodes and a queue of next points to check
+// DijkstraRecursive struct stores the 2D grid of nodes and a queue of next points to check
 // and a portal map to add jumps to the queue
-type Dijkstra struct {
-	rawInput          [][]string // stores the raw 2D grid to be passed into a Layer factory
-	layers            []*Layer
-	queue             [][3]int
-	portalMap         map[string][2]int // map to pass to Layer factory
-	startCoordinates  [2]int            // coordinates on first layer
-	finishCoordinates [2]int            // coordinates on first layer
+type DijkstraRecursive struct {
+	sanitizedGrid      [][]string // stores the raw 2D grid to be passed into a Layer factory
+	layers             []*Layer
+	queue              [][3]int
+	outerPortalCoords  map[string][2]int // map portal name to coordinates on outer edge
+	innerPortalCoords  map[string][2]int // map portal name to coordinates on inner edge
+	mapCoordsToPortals map[[2]int]string // arrays pass by value, so this can be used as a key
+	startCoordinates   [2]int            // coordinates on first layer
+	finishCoordinates  [2]int            // coordinates on first layer
 }
 
 // Layer is a single layer of the 3D maze
 // assuming the maze grows downwards
 type Layer struct {
 	grid       [][]*Node
-	layerIndex int               // ground level == 0, one down == 1, two down == 2, etc.
-	portalMap  map[string][3]int // jumpLayer, jumpRow, jumpCol
+	layerIndex int // ground level == 0, one down == 1, two down == 2, etc.
 }
 
 // Node data type is custom built for this algo, i.e. also stores if this is a portal cell
@@ -49,66 +57,47 @@ type Node struct {
 	value           string
 	distance        int
 	portalName      string // <portalCharacters><row><col>, will be used to jump to other indexes
-	jumpCoordinates [2]int // coordinates of its paired portal (if applicable)
+	jumpCoordinates [3]int // coordinates of its paired portal if applicable
 }
 
-// MakeDijkstraGrid does just that
-func MakeDijkstraGrid(inputGrid [][]string) *Dijkstra {
-	dijkstra := Dijkstra{
-		rawInput:          inputGrid,
-		layers:            []*Layer{},
-		queue:             [][3]int{},
-		portalMap:         map[string][2]int{},
-		startCoordinates:  [2]int{},
-		finishCoordinates: [2]int{},
+// MakeDijkstraRecursive does just that
+func MakeDijkstraRecursive(inputGrid [][]string) *DijkstraRecursive {
+	dijkstra := DijkstraRecursive{
+		sanitizedGrid:      make([][]string, len(inputGrid)-4), // preprocess the inputGrid to make future layer creation easier
+		layers:             []*Layer{},
+		queue:              make([][3]int, 1),
+		outerPortalCoords:  map[string][2]int{},
+		innerPortalCoords:  map[string][2]int{},
+		mapCoordsToPortals: map[[2]int]string{},
 	}
-	portalMapHelper := make(map[string][2]int)
 
-	grid := make([][]*Node, len(inputGrid)-4)
-	// iterate starting at 2,2 to skip the top and left and end len-2 to skip bottom & right
+	for i := range dijkstra.sanitizedGrid {
+		dijkstra.sanitizedGrid[i] = inputGrid[i+2][2 : len(inputGrid[0])-2]
+	}
+
+	// populate outer/innerPortalCoords, critical when generating Layers
+	// populating maps of jump coordinates
 	for row := 2; row < len(inputGrid)-2; row++ {
-		grid[row-2] = make([]*Node, len(inputGrid[0])-4)
 		for col := 2; col < len(inputGrid[0])-2; col++ {
-			// make a node for each cell
-			switch value := inputGrid[row][col]; value {
-			case "#": // wall
-				grid[row-2][col-2] = &Node{"#", bigSafeInt, "", [2]int{0, 0}}
-				// if this is a hallway node, use a helper function to determine if there this is a portal
-			case ".": // hallway
-				hallwayNode := &Node{
-					value:           ".",
-					distance:        bigSafeInt,
-					portalName:      "",
-					jumpCoordinates: [2]int{0, 0},
-				}
-				portalName := getPortalName(inputGrid, row, col)
-				if len(portalName) != 0 {
-					// assign portal name for this node
-					hallwayNode.portalName = portalName
+			// if a hallway and portalName is not an empty string
+			portalName := getPortalName(inputGrid, row, col)
 
-					// generatine the portal maps for each node is a pain...
-					// if this is portal's pair hasn't been found yet (i.e. equal to zero value of [2]int), add it to a map
-					if pairedPortal := portalMapHelper[portalName]; pairedPortal == [2]int{0, 0} {
-						portalMapHelper[portalName] = [2]int{row - 2, col - 2}
-					} else {
-						// else it has been found, set the jumpCoordinates on this node to pair's coords
-						hallwayNode.jumpCoordinates = pairedPortal
-						// set its pair's jumpCoordinates to this node's coords
-						grid[pairedPortal[0]][pairedPortal[1]].jumpCoordinates = [2]int{row - 2, col - 2}
-					}
+			if inputGrid[row][col] == "." && portalName != "" {
+				// add to map of coordinates to portal name
+				dijkstra.mapCoordsToPortals[[2]int{row - 2, col - 2}] = portalName
+
+				// add to outer or inner portal coords maps
+				if onEdgeOfGrid(inputGrid, row-2, col-2) || onEdgeOfGrid(inputGrid, row+2, col+2) {
+					dijkstra.outerPortalCoords[portalName] = [2]int{row - 2, col - 2}
+				} else {
+					dijkstra.innerPortalCoords[portalName] = [2]int{row - 2, col - 2}
 				}
-				grid[row-2][col-2] = hallwayNode
-				// if it is AA, update the distance of this node to zero, initialize queue
+
+				// Initial and final portal detection
 				if portalName == "AA" {
-					// !! unused
 					dijkstra.startCoordinates = [2]int{row - 2, col - 2}
-
-					hallwayNode.distance = 0
-					dijkstra.queue = [][2]int{
-						[2]int{row - 2, col - 2},
-					}
+					dijkstra.queue[0] = [3]int{0, row - 2, col - 2}
 				}
-				// if end portal, set finish coordinates
 				if portalName == "ZZ" {
 					dijkstra.finishCoordinates = [2]int{row - 2, col - 2}
 				}
@@ -116,17 +105,143 @@ func MakeDijkstraGrid(inputGrid [][]string) *Dijkstra {
 		}
 	}
 
-	// set grid field
-	dijkstra.grid = grid
+	// create first layer
+	dijkstra.AddLayer()
 
 	return &dijkstra
 }
 
 // AddLayer will add a new layer to the dijkstra layers slice
-//
-func (dijkstra *Dijkstra) AddLayer() (layerCount int) {
+// will be called as out of range layers are jumped to
+func (dijkstra *DijkstraRecursive) AddLayer() (layerCount int) {
+	sanitizedGrid := dijkstra.sanitizedGrid
+	grid := make([][]*Node, len(sanitizedGrid))
+	layerIndex := len(dijkstra.layers)
+
+	// make copies of the outer/innerPortalMaps
+	innerPortalCoords, outerPortalCoords := map[string][3]int{}, map[string][3]int{}
+	// For all layers copy all outer portal coordinates except for AA and ZZ
+	for key, val := range dijkstra.outerPortalCoords {
+		// if jumping TO an outer portal, that means we're going DOWN a level
+		// so increment the first coordinate
+		outerPortalCoords[key] = [3]int{
+			layerIndex + 1,
+			val[0],
+			val[1],
+		}
+	}
+
+	// disallow jumping to an inner (lower) layer from layer0 because all outer edges are "blocked"
+	if layerIndex != 0 {
+		for key, val := range dijkstra.innerPortalCoords {
+			innerPortalCoords[key] = [3]int{
+				layerIndex - 1,
+				val[0],
+				val[1]}
+		}
+	}
+
+	for row := 0; row < len(sanitizedGrid); row++ {
+		grid[row] = make([]*Node, len(sanitizedGrid[0]))
+		for col := 0; col < len(sanitizedGrid); col++ {
+			switch value := sanitizedGrid[row][col]; value {
+			case "#":
+				grid[row][col] = &Node{"#", bigSafeInt, "", [3]int{0, 0, 0}}
+			case ".":
+				grid[row][col] = &Node{
+					value:    ".",
+					distance: bigSafeInt,
+				}
+				// get portal name and jump coord from maps if applicable
+				portalName, found := dijkstra.mapCoordsToPortals[[2]int{row, col}]
+				if found {
+					// ! this may go unused
+					grid[row][col].portalName = portalName
+
+					// determine if inner or outer coordinates are the ones being jumped to
+					if onEdgeOfGrid(sanitizedGrid, row, col) {
+						grid[row][col].jumpCoordinates = innerPortalCoords[portalName]
+					} else {
+						grid[row][col].jumpCoordinates = outerPortalCoords[portalName]
+					}
+				}
+				// set initial distance for AA cell
+				if portalName == "AA" && layerIndex == 0 {
+					grid[row][col].distance = 0
+				}
+			}
+		}
+	}
+
+	dijkstra.layers = append(dijkstra.layers, &Layer{grid, layerIndex})
 	return len(dijkstra.layers)
 }
+
+// dequeues a set of coordinates, enqueues any of its appropriate neighbors (including potential
+// portals/jumps and adds layers if necessary)
+// returns true if the queue is empty OR the ZZ portal on layer0 has been reached
+func (dijkstra *DijkstraRecursive) handleFrontOfQueue() (done bool) {
+	dRow := [4]int{0, 0, -1, 1}
+	dCol := [4]int{-1, 1, 0, 0}
+
+	dequeued := dijkstra.queue[0]
+	layer, row, col := dequeued[0], dequeued[1], dequeued[2]
+	currentNode := dijkstra.layers[layer].grid[row][col]
+
+	// return out of the final node has been found!
+	if currentNode.portalName == "ZZ" && layer == 0 {
+		return true
+	}
+
+	// add layers on the same layer if they are hallways to traverse into
+	currentLayersGrid := dijkstra.layers[layer].grid
+	for i := 0; i < 4; i++ {
+		nextRow, nextCol := row+dRow[i], col+dCol[i]
+		isInbounds := nextRow >= 0 && nextRow < len(currentLayersGrid) && nextCol >= 0 && nextCol < len(currentLayersGrid[0])
+		if isInbounds {
+			// if the nextNode is a hallway & has not been traveled to yet
+			if nextNode := currentLayersGrid[nextRow][nextCol]; nextNode != nil && nextNode.value == "." && nextNode.distance == bigSafeInt {
+				// update the distance of the nextNode
+				nextNode.distance = currentNode.distance + 1
+				// add its coordinates to the queue, will always be on the same layer b/c this is NOT handling jumps
+				dijkstra.queue = append(dijkstra.queue, [3]int{layer, nextRow, nextCol})
+			}
+		}
+	}
+
+	// check if a portal jump is possible!
+	// also check if the jumpCoordinates are the zero value of a [3]int
+	if currentNode.portalName != "" {
+		// find coordinates to jump to and the node itself
+		jumpLayer := currentNode.jumpCoordinates[0]
+		jumpRow := currentNode.jumpCoordinates[1]
+		jumpCol := currentNode.jumpCoordinates[2]
+
+		// if jump is going to be on an out of range layer, fire off an AddLayer
+		if jumpLayer == len(dijkstra.layers) {
+			dijkstra.AddLayer()
+		}
+
+		// update distance of node being jumped to
+		jumpNode := dijkstra.layers[jumpLayer].grid[jumpRow][jumpCol]
+		jumpNode.distance = currentNode.distance + 1
+
+		// add to queue
+		dijkstra.queue = append(dijkstra.queue, currentNode.jumpCoordinates)
+	}
+
+	// dequeue, return true if queue is now empty
+	dijkstra.queue = dijkstra.queue[1:]
+	if len(dijkstra.queue) == 0 {
+		fmt.Println("EMPTY QUEUE")
+		return true
+	}
+	return false
+}
+
+/*************************************************************************************
+*** SMALL HELPER FUNCTIONS
+*************************************************************************************/
 
 // helper function to run in 4 directions and see if any of them are a capital letter
 // if that's true, then grab the portal name in that direction and return it (two char string)
@@ -162,49 +277,14 @@ func getPortalName(grid [][]string, row, col int) string {
 	return ""
 }
 
-// returns true if the queue is empty OR the ZZ portal has been reached
-func (dijkstra *Dijkstra) handleFrontOfQueue() (done bool) {
-	// dRow := [4]int{0, 0, -1, 1}
-	// dCol := [4]int{-1, 1, 0, 0}
+func onEdgeOfGrid(grid [][]string, row, col int) bool {
+	if row == 0 || col == 0 {
+		return true
+	}
 
-	// row, col := dijkstra.queue[0][0], dijkstra.queue[0][1]
-	// currentNode := dijkstra.grid[row][col]
+	if row == len(grid)-1 || col == len(grid[0])-1 {
+		return true
+	}
 
-	// if currentNode.portalName == "ZZ" {
-	// 	return true
-	// }
-
-	// for i := 0; i < 4; i++ {
-	// 	nextRow, nextCol := row+dRow[i], col+dCol[i]
-	// 	isInbounds := nextRow >= 0 && nextRow < len(dijkstra.grid) && nextCol >= 0 && nextCol < len(dijkstra.grid[0])
-	// 	if isInbounds {
-	// 		// if the nextNode is a hallway & has not been traveled to yet
-	// 		if nextNode := dijkstra.grid[nextRow][nextCol]; nextNode != nil && nextNode.value == "." && nextNode.distance == bigSafeInt {
-	// 			// update the distance of the nextNode
-	// 			nextNode.distance = currentNode.distance + 1
-	// 			// add its coordinates to the queue
-	// 			dijkstra.queue = append(dijkstra.queue, [2]int{nextRow, nextCol})
-	// 		}
-	// 	}
-	// }
-
-	// // check if a portal jump is possible!
-	// if currentNode.portalName != "" {
-	// 	// find coordinates to jump to and the node itself
-	// 	jumpRow := currentNode.jumpCoordinates[0]
-	// 	jumpCol := currentNode.jumpCoordinates[1]
-	// 	jumpNode := dijkstra.grid[jumpRow][jumpCol]
-
-	// 	// update distance
-	// 	jumpNode.distance = currentNode.distance + 1
-	// 	// add to queue
-	// 	dijkstra.queue = append(dijkstra.queue, currentNode.jumpCoordinates)
-	// }
-
-	// // dequeue, return true if queue is now empty
-	// dijkstra.queue = dijkstra.queue[1:]
-	// if len(dijkstra.queue) == 0 {
-	// 	return true
-	// }
-	// return false
+	return false
 }
