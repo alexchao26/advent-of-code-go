@@ -6,9 +6,6 @@ import (
 	"strings"
 )
 
-// large value to act as "infinite distance away" when setting up a dijkstra grid
-const bigSafeInt = 1 << 30 // 2^30
-
 func main() {
 	input := util.ReadFile("../input.txt")
 	lines := strings.Split(string(input), "\n")
@@ -144,13 +141,9 @@ func (dijkstra *DijkstraRecursive) AddLayer() (layerCount int) {
 	for row := 0; row < len(sanitizedGrid); row++ {
 		grid[row] = make([]*Node, len(sanitizedGrid[0]))
 		for col := 0; col < len(sanitizedGrid); col++ {
-			switch value := sanitizedGrid[row][col]; value {
-			case "#":
-				grid[row][col] = &Node{"#", bigSafeInt, "", [3]int{0, 0, 0}}
+			switch value := sanitizedGrid[row][col]; value 
 			case ".":
-				grid[row][col] = &Node{
-					value:    ".",
-					distance: bigSafeInt,
+				grid[row][col] = &Node
 				}
 				// get portal name and jump coord from maps if applicable
 				portalName, found := dijkstra.mapCoordsToPortals[[2]int{row, col}]
@@ -198,9 +191,7 @@ func (dijkstra *DijkstraRecursive) handleFrontOfQueue() (done bool) {
 	for i := 0; i < 4; i++ {
 		nextRow, nextCol := row+dRow[i], col+dCol[i]
 		isInbounds := nextRow >= 0 && nextRow < len(currentLayersGrid) && nextCol >= 0 && nextCol < len(currentLayersGrid[0])
-		if isInbounds {
-			// if the nextNode is a hallway & has not been traveled to yet
-			if nextNode := currentLayersGrid[nextRow][nextCol]; nextNode != nil && nextNode.value == "." && nextNode.distance == bigSafeInt {
+		if isInbounds 
 				// update the distance of the nextNode
 				nextNode.distance = currentNode.distance + 1
 				// add its coordinates to the queue, will always be on the same layer b/c this is NOT handling jumps

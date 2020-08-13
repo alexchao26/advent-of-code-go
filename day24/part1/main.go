@@ -86,7 +86,8 @@ func getBiodiversity(grid [][]string) int {
 	for i, row := range grid {
 		for j, val := range row {
 			// dumb cheeky way to get power of two... 1 is 2^0, then shift the power
-			powerOfTwo := 1 << (5*i + j) // 1 << 0 == 2^0 == 1; 1 << 1 == 2^1
+			// 1 << 0 == 2^0 == 1; 1 << 1 == 2^1
+			powerOfTwo := 1 << (5*i + j)
 			if val == "#" {
 				biodiversity += powerOfTwo
 			}

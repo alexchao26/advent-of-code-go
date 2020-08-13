@@ -3,6 +3,7 @@ package main
 import (
 	"adventofcode/util"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 )
@@ -100,7 +101,7 @@ func MakeDijkstraGrid(grid [][]string, startCoords [2]int) *DijkstraGrid {
 		for col, cellString := range rowSli {
 			finalGrid[row][col] = &dijkstraNode{
 				value:      cellString,
-				distance:   1<<31 - 1,                       // maximum safe integer, effectively 2^31 - 1
+				distance:   math.MaxInt32,
 				keysFound:  map[string]bool{startKey: true}, // initialize with the starting key
 				keysNeeded: make(map[string]bool),           // empty map for now
 				seen:       false,                           // initialize as false
@@ -223,7 +224,7 @@ func (graph *Graph) dfsMinmumDistance() int {
 	// inputs are: 1. the entry point (the key to generate a path FROM)
 	//             2. the keys that have been found so far
 	traverse = func(entry string, keysFound map[string]bool) int {
-		shortestFromThisNode := 1<<31 - 1
+		shortestFromThisNode := math.MaxInt32
 
 		cacheKey := makeCacheKey(entry, keysFound, graph.allKeysNeeded)
 

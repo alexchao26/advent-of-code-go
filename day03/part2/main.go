@@ -3,6 +3,7 @@ package main
 import (
 	"adventofcode/util"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -18,7 +19,7 @@ func main() {
 	coordsMap1 := makeCoordinatesMap(split1)
 	coordsMap2 := makeCoordinatesMap(split2)
 
-	lowestSumOfDistances := 1<<31 - 1
+	lowestSumOfDistances := math.MaxInt32
 
 	// iterate over all keys & values in coordsMap1
 	for key, value1 := range coordsMap1 {
