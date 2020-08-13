@@ -1,7 +1,6 @@
 /*
 Intcode struct is defined within this file
 Helper function that converts strings to ASCII codes to be written to the computer
-	it could all be combined together into a new computer...
 */
 
 package main
@@ -31,12 +30,11 @@ func main() {
 	comp.Step(-1)
 
 	for comp.IsRunning {
+		// get line from the terminal, convert it to ascii and write it to the intcode computer
 		text := readFromCommandLine()
 
-		// write string to slice of ascii values
 		instruction := convertStringToASCII(text)
 
-		// write instructions to intcode/ascii computer
 		for _, v := range instruction {
 			comp.Step(v)
 		}
@@ -48,7 +46,6 @@ func main() {
 
 		// ! Code is 2181046280
 	}
-	// fmt.Printf("Hull damage: %v\n", comp.Outputs[len(comp.Outputs)-1])
 }
 
 func readFromCommandLine() string {
@@ -149,7 +146,7 @@ func (comp *Intcode) Step(input int) {
 			// set LastOutput of the computer & log it
 			comp.Outputs = append(comp.Outputs, output)
 
-			// NOTE: day25 specific, print out the output message
+			// NOTE: day25 specific, print out the output message to play the game
 			fmt.Print(string(output))
 
 			comp.InstructionIndex += 2
