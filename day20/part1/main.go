@@ -15,7 +15,7 @@ func main() {
 		grid[i] = strings.Split(v, "")
 
 		// * Uncomment to print the input
-		fmt.Println(grid[i])
+		// fmt.Println(grid[i])
 	}
 
 	dijkstra := MakeDijkstraGrid(grid)
@@ -23,9 +23,9 @@ func main() {
 
 	for !dijkstra.handleFrontOfQueue() {
 		// * watch the queue grow and shrink
-		fmt.Println("  Queue", dijkstra.queue)
+		// fmt.Println("  Queue", dijkstra.queue)
 	}
-	fmt.Println("Final Queue", dijkstra.queue)
+	// fmt.Println("Final Queue", dijkstra.queue)
 
 	fmt.Println("Distance to ZZ portal", dijkstra.grid[dijkstra.finishCoordinates[0]][dijkstra.finishCoordinates[1]].distance)
 }

@@ -19,6 +19,8 @@ func main() {
 	coordsMap1 := makeCoordinatesMap(split1)
 	coordsMap2 := makeCoordinatesMap(split2)
 
+	// the highest safe int32... https://golang.org/pkg/math/
+	// start this at the highest possible value so it'll be easily overwriteable
 	minDist := math.MaxInt32
 
 	// iterate over all keys & values in coordsMap1

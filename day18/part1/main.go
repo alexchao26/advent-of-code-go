@@ -95,7 +95,7 @@ func MakeDijkstraGrid(grid [][]string, startCoords [2]int) *DijkstraGrid {
 		for col, cellString := range rowSli {
 			finalGrid[row][col] = &dijkstraNode{
 				value:      cellString,
-				distance:   math.MaxInt32,
+				distance:   math.MaxInt32,                   // maximum safe integer, effectively 2^31 - 1
 				keysFound:  map[string]bool{startKey: true}, // initialize with the starting key
 				keysNeeded: make(map[string]bool),           // empty map for now
 				seen:       false,                           // initialize as false
