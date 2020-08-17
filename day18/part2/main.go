@@ -270,7 +270,7 @@ func (graph *Graph) dfsMinmumDistance() int {
 func makeCacheKey(entry string, keysFound map[string]bool, allKeysNeeded map[string]bool) string {
 	cacheKey := entry
 	// generate sorted list of the keys that have NOT been found yet
-	needToFind := []string{}
+	var needToFind []string
 	for key := range allKeysNeeded {
 		if !keysFound[key] {
 			needToFind = append(needToFind, key)

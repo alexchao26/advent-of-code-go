@@ -70,10 +70,7 @@ type Robot struct {
 // MakeRobot returns an instance of a Robot
 func MakeRobot(intcodeInput []int) *Robot {
 	return &Robot{
-		0,
-		0,
-		make([][]string, 0),
-		MakeComputer(intcodeInput),
+		computer: MakeComputer(intcodeInput),
 	}
 }
 

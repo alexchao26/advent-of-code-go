@@ -32,8 +32,6 @@ func main() {
 	// fire off function to populate the robot's floorGrid property
 	robot.GetFloorGrid()
 
-	robot.computer.Outputs = []int{}
-
 	// NOTE the computer accepts numbers as inputs, but these numbers correlate to ASCII
 	// computer will ask for main movement routine. allows: [A-C,] i.e. A B C separated by ,
 	// end with a newline, e.g. integer 10 in ASCII

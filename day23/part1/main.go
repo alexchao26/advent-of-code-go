@@ -82,9 +82,6 @@ func (network *Network) Init(puzzleInput []int) {
 		// Make and prime computer with its NIC number
 		network.computers[i] = MakeComputer(puzzleInput)
 		network.computers[i].Step(i)
-
-		// setup queue for this NIC computer, slice of [2]int
-		network.queues[i] = [][2]int{}
 	}
 }
 
