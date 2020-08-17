@@ -12,6 +12,7 @@ import (
 	"adventofcode/util"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -398,7 +399,7 @@ removeColsLeft:
 
 // findShortestLength is a (fairly) standard brute force searching algorithm that will return the shortest path from origin to the O2 tank (cell with a 2)
 func findShortestLength(grid [][]int, startX, startY int) int {
-	shortestLength := util.MaxSafeInt
+	shortestLength := math.MaxInt32
 
 	var recurse func(x, y, pathLength int)
 	recurse = func(x, y, pathLength int) {

@@ -3,11 +3,9 @@ package main
 import (
 	"adventofcode/util"
 	"fmt"
+	"math"
 	"strings"
 )
-
-// large value to act as "infinite distance away" when setting up a dijkstra grid
-const bigSafeInt = 1 << 30 // 2^30
 
 func main() {
 	input := util.ReadFile("../input.txt")
@@ -17,7 +15,7 @@ func main() {
 		grid[i] = strings.Split(v, "")
 
 		// * Uncomment to print the input
-		fmt.Println(grid[i])
+		// fmt.Println(grid[i])
 	}
 
 	dijkstra := MakeDijkstraGrid(grid)
@@ -25,9 +23,9 @@ func main() {
 
 	for !dijkstra.handleFrontOfQueue() {
 		// * watch the queue grow and shrink
-		fmt.Println("  Queue", dijkstra.queue)
+		// fmt.Println("  Queue", dijkstra.queue)
 	}
-	fmt.Println("Final Queue", dijkstra.queue)
+	// fmt.Println("Final Queue", dijkstra.queue)
 
 	fmt.Println("Distance to ZZ portal", dijkstra.grid[dijkstra.finishCoordinates[0]][dijkstra.finishCoordinates[1]].distance)
 }
@@ -63,12 +61,12 @@ func MakeDijkstraGrid(inputGrid [][]string) *Dijkstra {
 			// make a node for each cell
 			switch value := inputGrid[row][col]; value {
 			case "#": // wall
-				grid[row-2][col-2] = &Node{"#", bigSafeInt, "", [2]int{0, 0}}
+				grid[row-2][col-2] = &Node{"#", math.MaxInt32, "", [2]int{0, 0}}
 				// if this is a hallway node, use a helper function to determine if there this is a portal
 			case ".": // hallway
 				hallwayNode := &Node{
 					value:           ".",
-					distance:        bigSafeInt,
+					distance:        math.MaxInt32,
 					portalName:      "",
 					jumpCoordinates: [2]int{0, 0},
 				}
@@ -164,7 +162,7 @@ func (dijkstra *Dijkstra) handleFrontOfQueue() (done bool) {
 		isInbounds := nextRow >= 0 && nextRow < len(dijkstra.grid) && nextCol >= 0 && nextCol < len(dijkstra.grid[0])
 		if isInbounds {
 			// if the nextNode is a hallway & has not been traveled to yet
-			if nextNode := dijkstra.grid[nextRow][nextCol]; nextNode != nil && nextNode.value == "." && nextNode.distance == bigSafeInt {
+			if nextNode := dijkstra.grid[nextRow][nextCol]; nextNode != nil && nextNode.value == "." && nextNode.distance == math.MaxInt32 {
 				// update the distance of the nextNode
 				nextNode.distance = currentNode.distance + 1
 				// add its coordinates to the queue

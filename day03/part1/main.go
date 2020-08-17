@@ -3,6 +3,7 @@ package main
 import (
 	"adventofcode/util"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -20,7 +21,7 @@ func main() {
 
 	// the highest safe int32... https://golang.org/pkg/math/
 	// start this at the highest possible value so it'll be easily overwriteable
-	minDist := 1<<31 - 1
+	minDist := math.MaxInt32
 
 	// iterate over all keys & values in coordsMap1
 	// if that is also in the other map, check if it has a better manhattan dist
