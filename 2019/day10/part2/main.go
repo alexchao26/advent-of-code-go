@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"adventofcode/day10/part2/trig"
+	"adventofcode/2019/day10/part2/trig"
 	"adventofcode/util"
 )
 
