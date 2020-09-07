@@ -9,3 +9,4 @@ Day | Name | Type of Algo & Notes
 --- | --- | ---
 1 | Chronal Calibration | - Pretty simple, direct math problem
 2 | Inventory Management System | - Pretty simple, brute force string comparison
+3 | No Matter How You Slice It | - Still pretty simple, 2D grid overlaps, simple hashmap problem
