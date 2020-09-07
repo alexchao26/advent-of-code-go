@@ -8,4 +8,4 @@ Language: GoLang.
 Day | Name | Type of Algo & Notes
 --- | --- | ---
 1 | Chronal Calibration | - Pretty simple, direct math problem
-2 | 
+2 | Inventory Management System | - Pretty simple, brute force string comparison
