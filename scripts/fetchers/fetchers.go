@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -55,15 +56,24 @@ func GetWithAOCCookie(url string, cookie string) []byte {
 	fmt.Println("response length is", len(body))
 
 	if strings.HasPrefix(string(body), "Please don't repeatedly") {
-		panic("Repeated request github.com/alexchao26/advent-of-code-go error")
+		// panic("Repeated request github.com/alexchao26/advent-of-code-go error")
 	}
 
 	return body
 }
 
 func WriteToFile(filename string, contents []byte) {
+	MakeDir(filepath.Dir(filename))
+
 	err := ioutil.WriteFile(filename, contents, os.ModePerm)
 	if err != nil {
 		panicWrap(err, "writing file")
+	}
+}
+
+func MakeDir(dir string) {
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		panic(err)
 	}
 }

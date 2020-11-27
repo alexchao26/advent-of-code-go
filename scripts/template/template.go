@@ -15,7 +15,7 @@ type TemplateData struct {
 	Day  string // a string to include the prefixing zero
 }
 
-var testTemplateString = `package aoc{{.Year}}
+var testTemplateString = `package main
 
 import (
 	"testing"
@@ -23,24 +23,47 @@ import (
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
-func TestDay{{.Day}}Part1(t *testing.T) {
+func TestPart1(t *testing.T) {
+	// Examples
+	
 	// Run actual problem input
-	day{{.Day}}Part1(util.ReadFile("./day{{.Day}}-input.txt"))
+	// part1(util.ReadFile("input.txt"))
 }
 
-func TestDay{{.Day}}Part2(t *testing.T) {
+func TestPart2(t *testing.T) {
+	// Examples
+
 	// Run actual problem input
-	day{{.Day}}Part2(util.ReadFile("./day{{.Day}}-input.txt"))
+	// part2(util.ReadFile("input.txt"))
 }
 `
 
-var solutionTemplateString = `package aoc{{.Year}}
+var solutionTemplateString = `package main
 
-func day{{.Day}}Part1(input string) int {
+import (
+	"flag"
+	"fmt"
+
+	"github.com/alexchao26/advent-of-code-go/util"
+)
+
+func main() {
+	var part int
+	flag.IntVar(&part, "part", 1, "part 1 or 2")
+	fmt.Println("Running part", part)
+
+	if part == 1 {
+		part1(util.ReadFile("./input.txt"))
+	} else {
+		part2(util.ReadFile("./input.txt"))
+	}
+}
+
+func part1(input string) int {
 	return 0
 }
 
-func day{{.Day}}Part2(input string) int {
+func part2(input string) int {
 	return 0
 }
 `
@@ -61,8 +84,10 @@ func main() {
 		panic(err)
 	}
 
-	solutionFilename := filepath.Join(util.Dirname(), "../../", fmt.Sprintf("%d/day%02d.go", year, day))
-	testFilename := filepath.Join(util.Dirname(), "../../", fmt.Sprintf("%d/day%02d_test.go", year, day))
+	solutionFilename := filepath.Join(util.Dirname(), "../../", fmt.Sprintf("%d/day%02d/main.go", year, day))
+	testFilename := filepath.Join(util.Dirname(), "../../", fmt.Sprintf("%d/day%02d/main_test.go", year, day))
+
+	fetchers.MakeDir(filepath.Dir(solutionFilename))
 
 	EnsureNotOverwriting(solutionFilename)
 	EnsureNotOverwriting(testFilename)

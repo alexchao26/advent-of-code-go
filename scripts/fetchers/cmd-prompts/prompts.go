@@ -25,7 +25,7 @@ func main() {
 	prompt := parseHTML(body)
 
 	// write to file
-	filename := filepath.Join(util.Dirname(), "../../../", fmt.Sprintf("%d/day%02d-prompt.md", year, day))
+	filename := filepath.Join(util.Dirname(), "../../../", fmt.Sprintf("%d/day%02d/prompt.md", year, day))
 	fetchers.WriteToFile(filename, []byte(prompt))
 
 	fmt.Println("Wrote prompt to file: ", filename)
@@ -66,7 +66,7 @@ func dfsHTML(node *html.Node, cb func(*html.Node) []interface{}) []interface{} {
 func cbFindDayDescClass(node *html.Node) []interface{} {
 	for _, attr := range node.Attr {
 		if attr.Key == "class" && attr.Val == "day-desc" {
-			fmt.Println("day-desc node found!")
+			// fmt.Println("day-desc node found!")
 			return []interface{}{node}
 		}
 	}

@@ -18,7 +18,7 @@ func main() {
 	body := fetchers.GetWithAOCCookie(url, cookie)
 
 	// write to file
-	filename := filepath.Join(util.Dirname(), "../../..", fmt.Sprintf("%d/day%02d-input.txt", year, day))
+	filename := filepath.Join(util.Dirname(), "../../..", fmt.Sprintf("%d/day%02d/input.txt", year, day))
 	fetchers.WriteToFile(filename, body)
 
 	fmt.Println("Wrote to file: ", filename)
