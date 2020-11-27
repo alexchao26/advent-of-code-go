@@ -1,5 +1,6 @@
 ### Scripts
-Addition for 2020 event.
+Addition for 2020 event. 
+Note: need to make folder for the year first (`mkdir 2020`)
 
 path|usage
 ---|---
