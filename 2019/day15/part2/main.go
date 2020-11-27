@@ -12,7 +12,7 @@ Robot struct houses an Intcode computer and its RecursiveMove method populates a
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"

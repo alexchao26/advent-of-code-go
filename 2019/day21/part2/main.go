@@ -7,7 +7,7 @@ Helper function that converts strings to ASCII codes to be written to the comput
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"

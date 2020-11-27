@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"strconv"
 	"strings"
@@ -35,7 +35,7 @@ func main() {
 		fmt.Printf("output received at %v, %v to go\n", time.Now(), 100-i-1)
 	}
 
-	// Transform into AoC output
+	// Transform into github.com/alexchao26/advent-of-code-go output
 	var firstEightDigits int
 	for i := 0; i < 8; i++ {
 		firstEightDigits *= 10

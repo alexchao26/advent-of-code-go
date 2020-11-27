@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"strconv"
 	"strings"
@@ -28,7 +28,7 @@ func main() {
 
 			// run step on the cloned slice
 			step(clone, 0)
-			// check if the zero address is equal to the AoC value
+			// check if the zero address is equal to the github.com/alexchao26/advent-of-code-go value
 			if clone[0] == 19690720 {
 				// print answers to console (manually add to advent of code)
 				fmt.Println("noun is", i, "verb is", j)

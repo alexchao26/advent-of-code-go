@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"sort"
 	"strconv"
@@ -67,7 +67,7 @@ func main() {
 	}
 
 	// print ID * time (minute)
-	fmt.Printf("Sleepiest guard is %v, at minute %v.\nAoC answer: %v\n",
+	fmt.Printf("Sleepiest guard is %v, at minute %v.\ngithub.com/alexchao26/advent-of-code-go answer: %v\n",
 		IDOfSleepiestGuard,
 		bestMinute,
 		IDOfSleepiestGuard*bestMinute,

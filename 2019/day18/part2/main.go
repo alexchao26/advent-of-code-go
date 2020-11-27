@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"math"
 	"sort"

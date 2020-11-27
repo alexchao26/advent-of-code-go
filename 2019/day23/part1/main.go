@@ -6,7 +6,7 @@ Intcode struct is defined within this file
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"

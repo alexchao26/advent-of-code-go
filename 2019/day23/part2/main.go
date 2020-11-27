@@ -7,7 +7,7 @@ Network struct to store 50 instances of Intcode computers and 50 queues for thei
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
@@ -82,7 +82,7 @@ func main() {
 		// if all nat computers are waiting for inputs, write the natpacket to
 		// the zero-th computer's queue
 		if allNatsWaiting {
-			// check if this packet has a duplicate Y value, if so print AoC output
+			// check if this packet has a duplicate Y value, if so print github.com/alexchao26/advent-of-code-go output
 			if lastNatY == natPacket[1] {
 				fmt.Println(lastNatY, "written to NAT twice")
 				// stop the infinite loop

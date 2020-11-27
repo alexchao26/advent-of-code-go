@@ -2,8 +2,8 @@ package util
 
 import (
 	"io/ioutil"
-	"log"
 	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -16,8 +16,7 @@ func ReadFile(pathFromCaller string) string {
 	// Docs: https://golang.org/pkg/runtime/#Caller
 	_, filename, _, ok := runtime.Caller(1)
 	if !ok {
-		// NOTE this could be updated to make ReadFile return an error, but that's overkill...
-		log.Fatal("Could not find Caller of util.ReadFile")
+		panic("Could not find Caller of util.ReadFile")
 	}
 
 	// parse directory with pathFromCaller (which could be relative to Directory)
@@ -26,9 +25,18 @@ func ReadFile(pathFromCaller string) string {
 	// read the entire file & return the byte slice as a string
 	content, err := ioutil.ReadFile(absolutePath)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	// trim off new lines and tabs at end of input files
 	strContent := string(content)
 	return strings.TrimRight(strContent, "\n")
+}
+
+// Dirname is a port of __dirname in node
+func Dirname() string {
+	_, filename, _, ok := runtime.Caller(1)
+	if !ok {
+		panic("getting calling function")
+	}
+	return filepath.Dir(filename)
 }

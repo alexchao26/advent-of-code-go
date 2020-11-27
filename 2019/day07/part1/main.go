@@ -6,7 +6,7 @@ MakePermutations is in the util package as that will likely be reused
 package main
 
 import (
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"

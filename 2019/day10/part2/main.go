@@ -5,8 +5,8 @@ import (
 	"math"
 	"strings"
 
-	"adventofcode/2019/day10/part2/trig"
-	"adventofcode/util"
+	"github.com/alexchao26/advent-of-code-go/2019/day10/part2/trig"
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 /*
@@ -98,7 +98,7 @@ func main() {
 
 	// print the last used asteroid
 	fmt.Println("Last asteroid", lastAsteroid)
-	// print the AoC-formatted answer
+	// print the github.com/alexchao26/advent-of-code-go-formatted answer
 	fmt.Println("Advent of code answer: ", lastAsteroid.y*100+lastAsteroid.x)
 }
 
