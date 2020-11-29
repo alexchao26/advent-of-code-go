@@ -53,9 +53,11 @@ func main() {
 	fmt.Println("Running part", part)
 
 	if part == 1 {
-		part1(util.ReadFile("./input.txt"))
+		ans := part1(util.ReadFile("./input.txt"))
+		fmt.Println("Output:", ans)
 	} else {
-		part2(util.ReadFile("./input.txt"))
+		ans := part2(util.ReadFile("./input.txt"))
+		fmt.Println("Output:", ans)
 	}
 }
 

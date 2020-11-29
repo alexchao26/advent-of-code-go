@@ -16,8 +16,10 @@ func panicWrap(err error, str string) {
 }
 
 func ParseFlags() (day, year int, cookie string) {
-	flag.IntVar(&day, "day", time.Now().Day(), "day number to fetch, 1-25")
-	flag.IntVar(&year, "year", 2020, "AOC year")
+	today := time.Now()
+	flag.IntVar(&day, "day", today.Day(), "day number to fetch, 1-25")
+	flag.IntVar(&year, "year", today.Year(), "AOC year")
+	// env variable set via .bash_profile/.zshenv/etc
 	flag.StringVar(&cookie, "cookie", os.Getenv("AOC_SESSION_COOKIE"), "AOC session cookie")
 	flag.Parse()
 
