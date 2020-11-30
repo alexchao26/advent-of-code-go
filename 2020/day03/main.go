@@ -10,6 +10,7 @@ import (
 func main() {
 	var part int
 	flag.IntVar(&part, "part", 1, "part 1 or 2")
+	flag.Parse()
 	fmt.Println("Running part", part)
 
 	if part == 1 {
