@@ -8,7 +8,7 @@ var tests1 = []struct {
 	input string
 	// add extra args if needed
 }{
-	// {"actual", /* ACTUAL ANSWER */, util.ReadFile("input.txt")},
+	// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
 }
 
 func TestPart1(t *testing.T) {
@@ -16,7 +16,7 @@ func TestPart1(t *testing.T) {
 		t.Run(test.name, func(*testing.T) {
 			got := part1(test.input)
 			if got != test.want {
-				t.Errorf("want %v, got %v", test.want, got)
+				t.Errorf("got %v, want %v", got, test.want)
 			}
 		})
 	}
@@ -28,7 +28,7 @@ var tests2 = []struct {
 	input string
 	// add extra args if needed
 }{
-	// {"actual", /* ACTUAL ANSWER */, util.ReadFile("input.txt")},
+	// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
 }
 
 func TestPart2(t *testing.T) {
@@ -36,7 +36,7 @@ func TestPart2(t *testing.T) {
 		t.Run(test.name, func(*testing.T) {
 			got := part2(test.input)
 			if got != test.want {
-				t.Errorf("want %v, got %v", test.want, got)
+				t.Errorf("got %v, want %v", got, test.want)
 			}
 		})
 	}
