@@ -14,31 +14,43 @@ var arg1 = `1, 1
 8, 9
 `
 
-func TestPart1(t *testing.T) {
-	// Examples
-	want := 17
-	got := part1(arg1)
-	if got != want {
-		t.Errorf("arg1: wanted %d, got %d", want, got)
-	}
+var tests1 = []struct {
+	name  string
+	want  int
+	input string
+}{
+	{"example1", 17, arg1},
+	{"actual", 5333, util.ReadFile("input.txt")},
+}
 
-	// Run actual problem input
-	want = 5333
-	got = part1(util.ReadFile("input.txt"))
-	if got != want {
-		t.Errorf("actual AOC input, wanted %d, got %d", want, got)
+func TestPart1(t *testing.T) {
+	for _, test := range tests1 {
+		t.Run(test.name, func(*testing.T) {
+			got := part1(test.input)
+			if got != test.want {
+				t.Errorf("want %v, got %v", test.want, got)
+			}
+		})
 	}
 }
 
-func TestPart2(t *testing.T) {
-	// Examples
-	distArg := 32
-	want := 16
-	got := part2(arg1, distArg)
-	if got != want {
-		t.Errorf("part2(arg1, %v): want %v, got %v", distArg, want, got)
-	}
+var tests2 = []struct {
+	name    string
+	want    int
+	input   string
+	distArg int
+}{
+	{"example1", 16, arg1, 32},
+	{"actual", 35334, util.ReadFile("input.txt"), 10000},
+}
 
-	// Run actual problem input
-	// part2(util.ReadFile("input.txt"))
+func TestPart2(t *testing.T) {
+	for _, test := range tests2 {
+		t.Run(test.name, func(*testing.T) {
+			got := part2(test.input, test.distArg)
+			if got != test.want {
+				t.Errorf("want %v, got %v", test.want, got)
+			}
+		})
+	}
 }
