@@ -12,11 +12,10 @@ var tests1 = []struct {
 }
 
 func TestPart1(t *testing.T) {
-	for _, test := range tests1 {
-		t.Run(test.name, func(*testing.T) {
-			got := part1(test.input)
-			if got != test.want {
-				t.Errorf("got %v, want %v", got, test.want)
+	for _, tt := range tests1 {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := part1(tt.input); got != tt.want {
+				t.Errorf("part1() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -32,11 +31,10 @@ var tests2 = []struct {
 }
 
 func TestPart2(t *testing.T) {
-	for _, test := range tests2 {
-		t.Run(test.name, func(*testing.T) {
-			got := part2(test.input)
-			if got != test.want {
-				t.Errorf("got %v, want %v", got, test.want)
+	for _, tt := range tests2 {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := part2(tt.input); got != tt.want {
+				t.Errorf("part2() = %v, want %v", got, tt.want)
 			}
 		})
 	}

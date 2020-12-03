@@ -65,3 +65,25 @@ func TestPart2(t *testing.T) {
 		})
 	}
 }
+
+func Test_rideSlopes(t *testing.T) {
+	type args struct {
+		grid  [][]bool
+		right int
+		down  int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := rideSlopes(tt.args.grid, tt.args.right, tt.args.down); got != tt.want {
+				t.Errorf("rideSlopes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
