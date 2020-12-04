@@ -50,37 +50,23 @@ func part2(input string) int {
 	return ans
 }
 
-func parseInput(input string) (grid [][]bool) {
+func parseInput(input string) (grid [][]string) {
 	lines := strings.Split(input, "\n")
 
-	grid = make([][]bool, len(lines))
+	grid = make([][]string, len(lines))
 	for i, l := range lines {
-		grid[i] = make([]bool, len(l))
-		for j, v := range l {
-			if v == '#' {
-				grid[i][j] = true
-			}
-		}
+		grid[i] = strings.Split(l, "")
 	}
 
 	return grid
 }
 
-func rideSlopes(grid [][]bool, right, down int) int {
-	var row, col int
+func rideSlopes(grid [][]string, right, down int) int {
 	var ans int
 
-	for {
-		row += down
-		col += right
-		col %= len(grid[0])
-
-		if row < len(grid) {
-			if grid[row][col] {
-				ans++
-			}
-		} else {
-			break
+	for row, col := 0, 0; row < len(grid); row, col = row+down, col+right {
+		if grid[row][col%len(grid[0])] == "#" {
+			ans++
 		}
 	}
 
