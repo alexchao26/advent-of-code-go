@@ -58,7 +58,7 @@ func GetWithAOCCookie(url string, cookie string) []byte {
 	fmt.Println("response length is", len(body))
 
 	if strings.HasPrefix(string(body), "Please don't repeatedly") {
-		// panic("Repeated request github.com/alexchao26/advent-of-code-go error")
+		panic("Repeated request github.com/alexchao26/advent-of-code-go error")
 	}
 
 	return body
