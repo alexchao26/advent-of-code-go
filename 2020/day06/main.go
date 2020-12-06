@@ -3,9 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"strings"
-
-	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {
@@ -14,38 +13,60 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
+	fileBytes, err := ioutil.ReadFile("input.txt")
+	if err != nil {
+		panic("Reading file" + err.Error())
+	}
+
 	if part == 1 {
-		ans := part1(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
+		ans := part1(string(fileBytes))
 		fmt.Println("Output:", ans)
 	} else {
-		ans := part2(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
+		ans := part2(string(fileBytes))
 		fmt.Println("Output:", ans)
 	}
 }
 
 func part1(input string) int {
-	parsed := parseInput(input)
-	_ = parsed
+	var sum int
 
-	return 0
+	groups := strings.Split(input, "\n\n")
+	for _, group := range groups {
+		questionsSeen := map[string]bool{}
+
+		people := strings.Split(group, "\n")
+		for _, person := range people {
+			for _, question := range strings.Split(person, "") {
+				questionsSeen[question] = true
+			}
+		}
+
+		sum += len(questionsSeen)
+	}
+
+	return sum
 }
 
 func part2(input string) int {
-	parsed := parseInput(input)
-	_ = parsed
+	var sum int
 
-	return 0
-}
+	groups := strings.Split(input, "\n\n")
+	for _, group := range groups {
+		questionsToCount := map[string]int{}
 
-func parseInput(input string) []int {
-	var ans []int
+		people := strings.Split(group, "\n")
+		for _, person := range people {
+			for _, question := range strings.Split(person, "") {
+				questionsToCount[question]++
+			}
+		}
 
-	lines := strings.Split(input, "\n")
-	for _, l := range lines {
-		ans = append(ans, util.StrToInt(l))
+		for _, count := range questionsToCount {
+			if count == len(people) {
+				sum++
+			}
+		}
 	}
 
-	return ans
+	return sum
 }
