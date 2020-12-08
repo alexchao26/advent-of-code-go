@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/util"
 )
@@ -51,11 +50,11 @@ func part2(input string) int {
 		newComputer := newComputerFromInput(input)
 
 		// flip this index's instruction if a jmp or nop
-		switch newComputer.instructions[i].instType {
+		switch newComputer.instructions[i].operation {
 		case "jmp":
-			newComputer.instructions[i].instType = "nop"
+			newComputer.instructions[i].operation = "nop"
 		case "nop":
-			newComputer.instructions[i].instType = "jmp"
+			newComputer.instructions[i].operation = "jmp"
 		case "acc":
 			continue
 		}
@@ -69,52 +68,6 @@ func part2(input string) int {
 	// this should never be hit
 	fmt.Println("ERROR: No terminating set of instructions found")
 	return -1
-}
-
-type instruction struct {
-	instType string
-	value    int
-}
-
-func newComputerFromInput(input string) computer {
-	var instructions []instruction
-
-	lines := strings.Split(input, "\n")
-	for _, l := range lines {
-		inst := instruction{}
-		fmt.Sscanf(l, "%s %d", &inst.instType, &inst.value)
-		instructions = append(instructions, inst)
-	}
-
-	return computer{instructions: instructions}
-}
-
-type computer struct {
-	instructions []instruction
-	index        int
-	accumulator  int
-}
-
-func (c *computer) acc(val int) {
-	c.accumulator += val
-	c.index++
-}
-func (c *computer) jmp(val int) {
-	c.index += val
-}
-func (c *computer) nop(val int) {
-	c.index++
-}
-
-func (c *computer) step() {
-	switch inst := c.instructions[c.index]; inst.instType {
-	case "acc":
-		c.acc(inst.value)
-	case "jmp":
-		c.jmp(inst.value)
-	case "nop":
-		c.nop(inst.value)
-	}
 }
 
 func isInfiniteLoop(comp computer) (finalAccumulatorVal int, isLoop bool) {
