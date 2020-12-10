@@ -16,11 +16,9 @@ func main() {
 
 	if part == 1 {
 		ans := part1(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
 		fmt.Println("Output:", ans)
 	} else {
 		ans := part2(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
 		fmt.Println("Output:", ans)
 	}
 }

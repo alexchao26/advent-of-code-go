@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/mathutil"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -100,7 +101,7 @@ func part2(input string, workers, fudgeTime int) int {
 				if len(prereqsCompletionTimes) == 0 {
 					readySteps = append(readySteps, name)
 				} else {
-					earliestScheduleTime := util.MaxInts(prereqsCompletionTimes...)
+					earliestScheduleTime := mathutil.MaxInt(prereqsCompletionTimes...)
 					if earliestScheduleTime <= time {
 						readySteps = append(readySteps, name)
 					}

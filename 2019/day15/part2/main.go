@@ -12,11 +12,14 @@ Robot struct houses an Intcode computer and its RecursiveMove method populates a
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/algos"
+	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {
@@ -387,7 +390,7 @@ func Draw(mapCoordsToType map[string]int) [][]int {
 	}
 
 	// Determine the bounds of the grid
-	edgeLength := 2 * util.MaxInts(-lowY, -lowX, highY, highX)
+	edgeLength := 2 * mathutil.MaxInt(-lowY, -lowX, highY, highX)
 
 	grid := make([][]int, edgeLength)
 	for i := 0; i < edgeLength; i++ {
@@ -413,7 +416,7 @@ func Draw(mapCoordsToType map[string]int) [][]int {
 	// trim off due to making the initial grid too large
 	grid = trim(grid)
 	// rotate it because of how I coded up the robot's coordinates :/
-	grid = util.RotateGridInts(grid)
+	grid = algos.RotateIntGrid(grid)
 	// retrim
 	grid = trim(grid)
 

@@ -6,6 +6,7 @@ import (
 	"math"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/mathutil"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -38,7 +39,7 @@ func part1(input string) int {
 			var coordsToBest [2]int
 			distCounts := map[int]int{} // dedeupe equidistant cells
 			for _, coord := range coords {
-				man := util.ManhattanDistance(r, c, coord[0], coord[1])
+				man := mathutil.ManhattanDistance(r, c, coord[0], coord[1])
 				if man <= bestManhattan {
 					bestManhattan = man
 					coordsToBest = coord
@@ -81,7 +82,7 @@ func part2(input string, dist int) int {
 		for c := boundLeft; c <= boundRight; c++ {
 			point := [2]int{r, c}
 			for _, coord := range coords {
-				coordsToTotalDist[point] += util.ManhattanDistance(point[0], point[1], coord[0], coord[1])
+				coordsToTotalDist[point] += mathutil.ManhattanDistance(point[0], point[1], coord[0], coord[1])
 			}
 			if coordsToTotalDist[point] < dist {
 				area++
@@ -99,8 +100,8 @@ func parseInputCoords(input string) [][2]int {
 		c := strings.Split(l, ", ")
 		if len(c) == 2 {
 			coords = append(coords, [2]int{
-				util.StrToInt(c[0]),
-				util.StrToInt(c[1]),
+				mathutil.StrToInt(c[0]),
+				mathutil.StrToInt(c[1]),
 			})
 		}
 	}

@@ -9,11 +9,14 @@ Draw function generates a string to display in terminal
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/algos"
+	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {
@@ -79,7 +82,7 @@ func Draw(mapCoordsToColor map[string]int) string {
 	}
 
 	// Determine the bounds of the grid
-	edgeLength := 2 * util.MaxInts(-lowY, -lowX, highY, highX)
+	edgeLength := 2 * mathutil.MaxInt(-lowY, -lowX, highY, highX)
 
 	grid := make([][]string, edgeLength)
 	for i := 0; i < edgeLength; i++ {
@@ -108,7 +111,7 @@ func Draw(mapCoordsToColor map[string]int) string {
 	// trim off due to making the initial grid too large
 	grid = trim(grid)
 	// rotate it because of how I coded up the robot's coordinates :/
-	grid = util.RotateGrid(grid)
+	grid = algos.RotateStringGrid(grid)
 	// retrim
 	grid = trim(grid)
 

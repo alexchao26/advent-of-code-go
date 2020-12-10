@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/mathutil"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -58,7 +59,7 @@ func parseInput(input string) map[string]map[string]int {
 				continue
 			}
 			parts := strings.Split(content, " ")
-			graph[color][parts[1]+" "+parts[2]] = util.StrToInt(parts[0])
+			graph[color][parts[1]+" "+parts[2]] = mathutil.StrToInt(parts[0])
 		}
 	}
 	return graph

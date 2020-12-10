@@ -6,11 +6,13 @@ MakePermutations is in the util package as that will likely be reused
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/algos"
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {
@@ -25,7 +27,7 @@ func main() {
 	}
 
 	// Make perms via a util function
-	perms := util.MakePermutations([]int{5, 6, 7, 8, 9})
+	perms := algos.MakePermutations([]int{5, 6, 7, 8, 9})
 
 	// iterate over all perms and run through a single pass of the Amps
 	// if the final output (from Amp E) is higher, update the highestOutput variable

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexchao26/advent-of-code-go/mathutil"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -62,8 +63,8 @@ func parseInputs(input string) (positions [][2]int, velocities [][2]int) {
 		posY := strings.TrimSpace(l[18:24])
 		velX := strings.TrimSpace(l[36:38])
 		velY := strings.TrimSpace(l[40:42])
-		positions = append(positions, [2]int{util.StrToInt(posX), util.StrToInt(posY)})
-		velocities = append(velocities, [2]int{util.StrToInt(velX), util.StrToInt(velY)})
+		positions = append(positions, [2]int{mathutil.StrToInt(posX), mathutil.StrToInt(posY)})
+		velocities = append(velocities, [2]int{mathutil.StrToInt(velX), mathutil.StrToInt(velY)})
 	}
 
 	return positions, velocities

@@ -104,7 +104,7 @@ func parseInput(input string) []int {
 
 	lines := strings.Split(input, "\n")
 	for _, l := range lines {
-		ans = append(ans, util.StrToInt(l))
+		ans = append(ans, mathutil.StrToInt(l))
 	}
 
 	return ans

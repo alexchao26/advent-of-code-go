@@ -29,7 +29,7 @@ func main() {
 
 func part1(input string) int {
 	nums := parseInput(input)
-	nums = append(nums, util.MaxInts(nums...)+3)
+	nums = append(nums, mathutil.MaxInt(nums...)+3)
 	sort.Ints(nums)
 
 	var oneDiff, threeDiff int
@@ -51,7 +51,7 @@ func part1(input string) int {
 
 func part2(input string) int {
 	nums := parseInput(input)
-	nums = append(nums, util.MaxInts(nums...)+3)
+	nums = append(nums, mathutil.MaxInt(nums...)+3)
 	sort.Ints(nums)
 
 	// return dynamicProgramming(input)
@@ -63,7 +63,7 @@ func parseInput(input string) []int {
 
 	lines := strings.Split(input, "\n")
 	for _, l := range lines {
-		ans = append(ans, util.StrToInt(l))
+		ans = append(ans, mathutil.StrToInt(l))
 	}
 
 	return ans
@@ -109,7 +109,7 @@ func makeMemoKey(nums []int, lastJolt int) string {
 
 func dynamicProgramming(input string) int {
 	nums := parseInput(input)
-	nums = append(nums, util.MaxInts(nums...)+3, 0)
+	nums = append(nums, mathutil.MaxInt(nums...)+3, 0)
 	sort.Ints(nums)
 
 	// initialize table with "1 way" to get to zero jolts

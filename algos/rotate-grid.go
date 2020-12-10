@@ -1,8 +1,8 @@
-package util
+package algos
 
 // RotateGrid returns the inputted grid, rotated counterclockwise
 // call it multiple times for 180, & 270 degree rotations
-func RotateGrid(grid [][]string) [][]string {
+func RotateStringGrid(grid [][]string) [][]string {
 	rotated := make([][]string, len(grid[0]))
 	for i := range rotated {
 		rotated[i] = make([]string, len(grid))
@@ -17,7 +17,7 @@ func RotateGrid(grid [][]string) [][]string {
 }
 
 // RotateGridInts will transpose a 2D array of ints
-func RotateGridInts(grid [][]int) [][]int {
+func RotateIntGrid(grid [][]int) [][]int {
 	rotated := make([][]int, len(grid[0]))
 	for i := range rotated {
 		rotated[i] = make([]int, len(grid))

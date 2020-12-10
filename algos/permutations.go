@@ -1,4 +1,4 @@
-package util
+package algos
 
 // MakePermutations will make all permutations of the numbers input
 // returns a pointer to avoid copying a large number of permutations

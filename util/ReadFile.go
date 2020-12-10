@@ -3,7 +3,6 @@ package util
 import (
 	"io/ioutil"
 	"path"
-	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -30,13 +29,4 @@ func ReadFile(pathFromCaller string) string {
 	// trim off new lines and tabs at end of input files
 	strContent := string(content)
 	return strings.TrimRight(strContent, "\n")
-}
-
-// Dirname is a port of __dirname in node
-func Dirname() string {
-	_, filename, _, ok := runtime.Caller(1)
-	if !ok {
-		panic("getting calling function")
-	}
-	return filepath.Dir(filename)
 }
