@@ -1,4 +1,4 @@
-package structures
+package datastructures
 
 // MinHeap is an implementation of a min heap
 type MinHeap struct {
