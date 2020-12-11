@@ -7,13 +7,13 @@ type MinHeap struct {
 
 // NewMinHeap initializes a heap with a closerToRootFunction that simply
 // returns true if the first arg is smaller than the second
-func NewMinHeap() MinHeap {
+func NewMinHeap() *MinHeap {
 	nestedHeap := heap{
 		closerToRoot: func(val1, val2 int) bool {
 			return val1 < val2
 		},
 	}
-	return MinHeap{nestedHeap}
+	return &MinHeap{nestedHeap}
 }
 
 // MaxHeap is an implementation of max heap
@@ -23,13 +23,13 @@ type MaxHeap struct {
 
 // NewMaxHeap initializes a heap with a closerToRootFunction that simply
 // returns true if the first arg is larger than the second
-func NewMaxHeap() MaxHeap {
+func NewMaxHeap() *MaxHeap {
 	nestedHeap := heap{
 		closerToRoot: func(val1, val2 int) bool {
 			return val1 > val2
 		},
 	}
-	return MaxHeap{nestedHeap}
+	return &MaxHeap{nestedHeap}
 }
 
 // heap contains a slice of heapNodes
