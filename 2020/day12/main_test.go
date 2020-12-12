@@ -1,14 +1,24 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/alexchao26/advent-of-code-go/util"
+)
+
+var exampleInput = `F10
+N3
+F7
+R90
+F11`
 
 var tests1 = []struct {
 	name  string
 	want  int
 	input string
-	// add extra args if needed
 }{
-	// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
+	{"example", 25, exampleInput},
+	{"actual", 820, util.ReadFile("input.txt")},
 }
 
 func TestPart1(t *testing.T) {
@@ -25,9 +35,9 @@ var tests2 = []struct {
 	name  string
 	want  int
 	input string
-	// add extra args if needed
 }{
-	// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
+	{"example", 286, exampleInput},
+	{"actual", 66614, util.ReadFile("input.txt")},
 }
 
 func TestPart2(t *testing.T) {
