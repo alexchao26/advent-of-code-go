@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/util"
@@ -18,28 +19,40 @@ func main() {
 		ans := part1(util.ReadFile("./input.txt"))
 		fmt.Println("Output:", ans)
 	} else {
-		// ans := part2(util.ReadFile("./input.txt"))
-		// fmt.Println("Output:", ans)
+		ans := part2(util.ReadFile("./input.txt"))
+		fmt.Println("Output:", ans)
 	}
 }
 
 func part1(input string) int {
 	g := newGame(input)
-	fmt.Println("game: ", g)
+	return g.runFullGame()
+}
 
-	var gameover bool
-	for !gameover {
-		gameover = g.runTurn()
-		fmt.Println("AFTER IN PART 1", g)
+func part2(input string) int {
+	var outcome int
+	for elfPower := 4; ; elfPower++ {
+		g := newGame(input)
+		elvesBefore := g.countElves()
+
+		// update all elves to the new attack power
+		for _, c := range g.coordsToChars {
+			if c.charType == "E" {
+				c.attackPower = elfPower
+			}
+		}
+
+		// run the game until it ends... not optimized: could abort when an elf dies
+		// but it's good enough
+		outcome = g.runFullGame()
+
+		// check if all elves are still alive
+		if elvesBefore == g.countElves() {
+			break
+		}
 	}
 
-	var totalHp int
-	for _, c := range g.coordsToChars {
-		totalHp += c.hp
-	}
-
-	// NOT 182715, too low
-	return g.rounds * totalHp
+	return outcome
 }
 
 type game struct {
@@ -50,23 +63,34 @@ type game struct {
 
 func (g game) String() string {
 	ans := fmt.Sprintf("Rounds: %d\n", g.rounds)
-	for _, row := range g.grid {
+	for rowNum, row := range g.grid {
+		ans += fmt.Sprintf("\n%02d: ", rowNum)
 		for _, v := range row {
 			ans += v
 		}
-		ans += "\n"
 	}
-
+	ans += "\nAlive characters:"
 	for coord, char := range g.coordsToChars {
-		ans += fmt.Sprintf("%v: Char: %v\n", coord, char)
+		ans += fmt.Sprintf("\n%v: Char: %v", coord, char)
 	}
 	return ans
 }
 
+func (g *game) countElves() int {
+	var elves int
+	for _, c := range g.coordsToChars {
+		if c.charType == "E" {
+			elves++
+		}
+	}
+	return elves
+}
+
 type character struct {
-	coord    [2]int
-	hp       int
-	charType string // "E" or "G"
+	coord       [2]int
+	hp          int
+	charType    string // "E" or "G"
+	attackPower int
 }
 
 func (c character) String() string {
@@ -86,9 +110,10 @@ func newGame(input string) *game {
 			case "E", "G":
 				coord := [2]int{row, col}
 				coordsToChars[coord] = &character{
-					coord:    coord,
-					hp:       200,
-					charType: val,
+					coord:       coord,
+					hp:          200,
+					charType:    val,
+					attackPower: 3, // default to 3
 				}
 			}
 		}
@@ -101,23 +126,34 @@ func newGame(input string) *game {
 	}
 }
 
-func (g *game) runTurn() (gameover bool) {
-	turnOrder := g.getTurnOrder()
+func (g *game) runFullGame() int {
+	var gameover bool
+	for !gameover {
+		gameover = g.runTurn()
+	}
 
-	for _, charCoords := range turnOrder {
-		// ensure this character is still alive
-		currentChar, ok := g.coordsToChars[charCoords]
-		if !ok {
-			fmt.Println("character is dead, skipping turn; ", charCoords)
+	var totalHp int
+	for _, c := range g.coordsToChars {
+		totalHp += c.hp
+	}
+
+	return g.rounds * totalHp
+}
+
+func (g *game) runTurn() (gameover bool) {
+	charsInOrder := g.getTurnOrder()
+
+	for _, char := range charsInOrder {
+		// if char is already dead, just continue on
+		if char.hp <= 0 {
 			continue
 		}
-		fmt.Println("turn's coordinates:", charCoords)
 
-		// check if there are enemies still
-		enemyType := getEnemyType(g.grid[charCoords[0]][charCoords[1]])
+		// check if there are enemies in entire game
+		enemyType := getEnemyType(char.charType)
 		var enemiesFound bool
-		for _, char := range g.coordsToChars {
-			if char.charType == enemyType {
+		for _, c := range g.coordsToChars {
+			if c.charType == enemyType {
 				enemiesFound = true
 				break
 			}
@@ -127,40 +163,35 @@ func (g *game) runTurn() (gameover bool) {
 		}
 
 		// check if the character has a unit next to ir right now
-		enemy := g.pickTarget(charCoords)
+		enemy := g.pickTarget(char.coord)
 		if enemy != nil {
 			// attack & move on
-			g.attack(g.coordsToChars[charCoords], enemy)
-			fmt.Println("  immediately attacking:", enemy)
+			g.attack(g.coordsToChars[char.coord], enemy)
 		} else {
-			// try to move, then try to pick an enemy again
-			inRangeCoordsMap := g.calcInRangeCoordsMap(g.grid[charCoords[0]][charCoords[1]])
-			// fmt.Println("for starting", startingCoord, "\n    IN RANGE MAP", inRangeCoordsMap)
-			// if no enemies are in the map, they're all dead
+			// else try to move, then try to pick an enemy again
+			inRangeCoordsMap := g.getInRangeOfEnemies(char.charType)
+			// if no in range coords, that does not mean all enemies are dead
+			// it just means there is no open floor around enemies
 			if len(inRangeCoordsMap) == 0 {
-				fmt.Println("--nowhere to move, continuing...")
 				continue
 			}
-
-			nextCoord, willMove := g.determineNextMove(charCoords, inRangeCoordsMap)
+			// get next move
+			nextCoord, willMove := g.determineNextMove(char.coord, inRangeCoordsMap)
 			if willMove {
-				fmt.Println("moving to", nextCoord)
-				// update grid and coordinates for this character
-				g.grid[nextCoord[0]][nextCoord[1]] = currentChar.charType
-				g.grid[charCoords[0]][charCoords[1]] = "."
-				g.coordsToChars[nextCoord] = g.coordsToChars[charCoords]
-				currentChar.coord = nextCoord
-				delete(g.coordsToChars, charCoords)
+				// update grid for this character
+				g.grid[nextCoord[0]][nextCoord[1]] = char.charType
+				g.grid[char.coord[0]][char.coord[1]] = "."
 
-				fmt.Println("  searching for enemy after moving")
+				// coords of this char have changed, update variables
+				delete(g.coordsToChars, char.coord) // delete old entry using char's outdated coords
+				g.coordsToChars[nextCoord] = char   // add new entry
+				char.coord = nextCoord              // update char's coords too
+
+				// pick a target and attack it
 				enemy := g.pickTarget(nextCoord)
 				if enemy != nil {
-					// attack & move on
 					g.attack(g.coordsToChars[nextCoord], enemy)
-					fmt.Println("    after attack:", enemy)
 				}
-			} else {
-				fmt.Println("NO IN RANGE TARGETS TO MOVE TO")
 			}
 		}
 	}
@@ -170,20 +201,18 @@ func (g *game) runTurn() (gameover bool) {
 }
 
 // returns a slice of coordinates where there are characters, in turn order
-func (g *game) getTurnOrder() [][2]int {
-	var charCoords [][2]int
+func (g *game) getTurnOrder() []*character {
+	var charsInOrder []*character
 	for i, row := range g.grid {
 		for j, tile := range row {
 			if tile == "E" || tile == "G" {
-				charCoords = append(charCoords, [2]int{i, j})
+				charsInOrder = append(charsInOrder, g.coordsToChars[[2]int{i, j}])
 			}
 		}
 	}
-	return charCoords
+	return charsInOrder
 }
 
-// order diffs in such a way that the shortest paths found will be in reading
-// list order
 var diffs = [][2]int{
 	{-1, 0}, // up
 	{0, -1}, // left
@@ -215,9 +244,8 @@ func (g *game) pickTarget(currentCoords [2]int) *character {
 }
 
 func (g *game) attack(attacker, target *character) {
-	target.hp -= 3
+	target.hp -= attacker.attackPower
 	if target.hp <= 0 {
-		fmt.Println("  KILLED:", target)
 		// remove target from map and update grid
 		targetCoords := target.coord
 		delete(g.coordsToChars, target.coord)
@@ -233,50 +261,70 @@ type bfsNode struct {
 
 func (g *game) determineNextMove(startingCoord [2]int, inRangeCoordsMap map[[2]int]bool) (nextCoord [2]int, willMove bool) {
 	queue := []bfsNode{
-		{coord: startingCoord, dist: 0, initialMove: [2]int{}},
+		{coord: startingCoord, dist: 0, initialMove: [2]int{}}, // some zero values are redundant, but readable
 	}
 	visitedCoords := map[[2]int]bool{[2]int{0, 0}: true}
 
-	for len(queue) > 0 {
-		// get front of queue
-		front := queue[0]
-		queue = queue[1:]
+	// store the closest in range nodes to tie break
+	var closestInRange []bfsNode
 
-		// if front is in range of an enemy, return the initial move
-		if inRangeCoordsMap[front.coord] {
-			return front.initialMove, true
-		}
+	// run while the closet in range slice is still empty and queue is not empty
+	for checkDist := 0; len(closestInRange) == 0 && len(queue) > 0; checkDist++ {
+		// process front of queue while its distance is equal to the check distance
+		for len(queue) > 0 && queue[0].dist == checkDist {
+			front := queue[0]
+			queue = queue[1:]
 
-		// if it has not been visited before, then check its four directions
-		if !visitedCoords[front.coord] {
-			for _, d := range diffs {
-				nextCoord := [2]int{d[0] + front.coord[0], d[1] + front.coord[1]}
-				// only proceed if next coordinate is walkable
-				if g.grid[nextCoord[0]][nextCoord[1]] == "." {
-					// add next coord to queue
-					node := bfsNode{
-						coord:       nextCoord,
-						dist:        front.dist + 1,
-						initialMove: front.initialMove,
+			// if front is in range of an enemy, add to closest in range slice
+			if inRangeCoordsMap[front.coord] {
+				closestInRange = append(closestInRange, front)
+			}
+
+			// if it has not been visited before, then check its four directions
+			if !visitedCoords[front.coord] {
+				for _, d := range diffs {
+					nextCoord := [2]int{d[0] + front.coord[0], d[1] + front.coord[1]}
+					// only proceed if next coordinate is walkable
+					if g.grid[nextCoord[0]][nextCoord[1]] == "." {
+						// add next coord to queue
+						node := bfsNode{
+							coord:       nextCoord,
+							dist:        front.dist + 1,
+							initialMove: front.initialMove,
+						}
+						if front.dist == 0 {
+							node.initialMove = nextCoord
+						}
+						queue = append(queue, node)
 					}
-					if front.dist == 0 {
-						node.initialMove = nextCoord
-					}
-					queue = append(queue, node)
 				}
 			}
+			visitedCoords[front.coord] = true
 		}
-		visitedCoords[front.coord] = true
 	}
 
-	fmt.Println("WILL NOT MOVE FROM ", startingCoord, "\nON GAME\n", g)
-	return [2]int{}, false
+	if len(closestInRange) == 0 {
+		return [2]int{}, false
+	}
+
+	// sort destination nodes via reading order of coords, break ties on initialMove
+	sort.Slice(closestInRange, func(i, j int) bool {
+		nodeI, nodeJ := closestInRange[i], closestInRange[j]
+		if nodeI.coord != nodeJ.coord {
+			return readingOrderSortFunc(nodeI.coord, nodeJ.coord)
+		}
+		return readingOrderSortFunc(nodeI.initialMove, nodeJ.initialMove)
+	})
+
+	// return the initial move of the winning bfs node, will be used to move
+	// the character
+	return closestInRange[0].initialMove, true
 }
 
 // returns a slice of coordinates that are next to enemies and tile is floor
 // to be run when a character wants to figure out where to move
 // if the returned map is empty (len 0), that indicates no one should move
-func (g *game) calcInRangeCoordsMap(attackingType string) map[[2]int]bool {
+func (g *game) getInRangeOfEnemies(attackingType string) map[[2]int]bool {
 	enemyType := getEnemyType(attackingType)
 
 	inRangeCoords := map[[2]int]bool{}
@@ -304,31 +352,12 @@ func getEnemyType(attacker string) string {
 	return "G"
 }
 
-// Path finding...
-//   Ties broken in READING order
-//   top to bottom, left to right
-//
-// # wall
-// . open
-// G goblin
-// E Elf
-//
-// Rounds:
-// each unit takes a turn & completes all its actions until the next unit goes
-// IN order of reading position (record at start of round)
-// 1. IF not in range of energy, tries to move towrds one
-//    1.1. identify all possible targets, if no targets, end combat
-//    1.2. get open squares (.) in range of all targets
-//         1.2.1 if no open squares found, end turn
-//    1.3. determine closest open square, tie break via reading order
-//    1.4. takes single step towards chosen target, along SHORTEST path, ties broken via reading order
-// 2. IF in range, attack
-//    2.1. if no units next to it, move on
-//    2.2. select neighbor with fewest hitpoints, tie break via reading order
-//    2.3. do damage equal to attack power (starts w/ 200HP & 3 attack power)
-//    2.4. if unit dies, make it a (.)
-
-// Part 1:
-// - find number of FULL rounds (i.e. do not include last one)
-// - find sum of remaining hit points on board
-// multiply them together
+// should i go before j in a slice where we're sorting by reading order
+func readingOrderSortFunc(i, j [2]int) (iBeforeJ bool) {
+	// compare via first indices if not equal
+	if i[0] != j[0] {
+		return i[0] < j[0]
+	}
+	// otherwise tie break via second indices
+	return i[1] < j[1]
+}
