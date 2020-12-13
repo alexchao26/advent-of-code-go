@@ -17,19 +17,19 @@ type TemplateData struct {
 
 var testTemplateString = `package main
 
-import "testing"
+import (
+	"testing"
+)
 
-var tests1 = []struct {
-	name  string
-	want  int
-	input string
-	// add extra args if needed
-}{
-	// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
-}
-
-func TestPart1(t *testing.T) {
-	for _, tt := range tests1 {
+func Test_part1(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
+	}
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := part1(tt.input); got != tt.want {
 				t.Errorf("part1() = %v, want %v", got, tt.want)
@@ -38,17 +38,15 @@ func TestPart1(t *testing.T) {
 	}
 }
 
-var tests2 = []struct {
-	name  string
-	want  int
-	input string
-	// add extra args if needed
-}{
-	// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
-}
-
-func TestPart2(t *testing.T) {
-	for _, tt := range tests2 {
+func Test_part2(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		// {"actual", ACTUAL_ANSWER, util.ReadFile("input.txt")},
+	}
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := part2(tt.input); got != tt.want {
 				t.Errorf("part2() = %v, want %v", got, tt.want)
@@ -65,6 +63,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/mathutil"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -93,20 +92,14 @@ func part1(input string) int {
 }
 
 func part2(input string) int {
-	parsed := parseInput(input)
-	_ = parsed
-
 	return 0
 }
 
-func parseInput(input string) []int {
-	var ans []int
-
+func parseInput(input string) (ans []int) {
 	lines := strings.Split(input, "\n")
 	for _, l := range lines {
 		ans = append(ans, mathutil.StrToInt(l))
 	}
-
 	return ans
 }
 `
