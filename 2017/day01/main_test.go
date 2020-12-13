@@ -1,0 +1,45 @@
+package main
+
+import (
+	"testing"
+
+	"github.com/alexchao26/advent-of-code-go/util"
+)
+
+func Test_part1(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{"example1", "1122", 3},
+		{"example2", "91212129", 9},
+		{"actual", util.ReadFile("input.txt"), 1393},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := part1(tt.input); got != tt.want {
+				t.Errorf("part1() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_part2(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{"example1", "1212", 6},
+		{"example2", "123425", 4},
+		{"actual", util.ReadFile("input.txt"), 1292},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := part2(tt.input); got != tt.want {
+				t.Errorf("part2() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
