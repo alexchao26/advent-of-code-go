@@ -35,3 +35,18 @@ func StrToInt(in string) int {
 func IntToStr(in int) string {
 	return strconv.Itoa(in)
 }
+
+func AbsInt(in int) int {
+	if in < 0 {
+		return -in
+	}
+	return in
+}
+
+func SumIntSlice(nums []int) int {
+	var sum int
+	for _, n := range nums {
+		sum += n
+	}
+	return sum
+}
