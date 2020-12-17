@@ -2,7 +2,13 @@ package main
 
 import (
 	"testing"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
+
+var example = `.#.
+..#
+###`
 
 func Test_part1(t *testing.T) {
 	tests := []struct {
@@ -10,7 +16,8 @@ func Test_part1(t *testing.T) {
 		input string
 		want  int
 	}{
-		// {"actual", util.ReadFile("input.txt"), ACTUAL_ANSWER},
+		{"example", example, 112},
+		{"actual", util.ReadFile("input.txt"), 388},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -27,7 +34,8 @@ func Test_part2(t *testing.T) {
 		input string
 		want  int
 	}{
-		// {"actual", util.ReadFile("input.txt"), ACTUAL_ANSWER},
+		{"example", example, 848},
+		{"actual", util.ReadFile("input.txt"), 2280},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
