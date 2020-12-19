@@ -43,7 +43,7 @@ func Test_part2(t *testing.T) {
 	}
 }
 
-func Test_handleFlat(t *testing.T) {
+func Test_calcFlatSlicePart2(t *testing.T) {
 	type args struct {
 		input []string
 	}
@@ -52,16 +52,16 @@ func Test_handleFlat(t *testing.T) {
 		args args
 		want string
 	}{
-		{"example", args{
-			input: []string{"1", "+", "3", "*", "4", "+", "5"},
-		},
+		{
+			"example",
+			args{input: []string{"1", "+", "3", "*", "4", "+", "5"}},
 			"36",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := handleFlat(tt.args.input); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("handleFlat() = %v, want %v", got, tt.want)
+			if got := calcFlatSlicePart2(tt.args.input); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("calcFlatSlicePart2() = %v, want %v", got, tt.want)
 			}
 		})
 	}

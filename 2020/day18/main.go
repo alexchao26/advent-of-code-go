@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/mathutil"
-
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -33,7 +32,7 @@ func part1(input string) int {
 	var total int
 	for _, line := range parsed {
 		// sum up this line, addressing things inside parens first...
-		total += doMaths(line)
+		total += doMaths(line, calcFlatSlicePart1)
 	}
 
 	return total
@@ -45,110 +44,80 @@ func part2(input string) int {
 	var total int
 
 	for _, line := range lines {
-		total += doMaths2(line)
+		total += doMaths(line, calcFlatSlicePart2)
 	}
 
 	return total
 }
 
-// 370?
 func parseInput(input string) (ans [][]string) {
 	lines := strings.Split(input, "\n")
 	for _, l := range lines {
+		// I got lucky that they were all single digit numbers...
 		ans = append(ans, strings.Split(strings.ReplaceAll(l, " ", ""), ""))
 	}
 	return ans
 }
 
-func doMaths(input []string) int {
-	var parensBalance int
-	var sum int
-	lastOperator := "+"
-	var nested []string
-	for _, val := range input {
-		switch val {
-		case "+", "*":
-			if parensBalance == 0 {
-				lastOperator = val
-			} else {
-				nested = append(nested, val)
-			}
-		case "(":
-			if parensBalance != 0 {
-				nested = append(nested, "(")
-			}
-			parensBalance++
-		case ")":
-			parensBalance--
-			if parensBalance == 0 {
-				if lastOperator == "+" {
-					sum += doMaths(nested)
-				} else {
-					sum *= doMaths(nested)
-				}
-				nested = []string{}
-			} else {
-				nested = append(nested, ")")
-			}
-		default:
-			if parensBalance == 0 {
-				if lastOperator == "+" {
-					sum += mathutil.StrToInt(val)
-				} else {
-					sum *= mathutil.StrToInt(val)
-				}
-			} else {
-				nested = append(nested, val)
-			}
-		}
-	}
-
-	return sum
-}
-
-var numReg = regexp.MustCompile("[0-9]")
-
-func isNum(str string) bool {
-	return numReg.MatchString(str)
-}
-
-func doMaths2(input []string) int {
-	var stack []int
+func doMaths(input []string, flatteningFunc func([]string) string) int {
+	var stackOpenIndices []int
+	var stackFlattened []string
 	for i := 0; i < len(input); i++ {
-		// iterate throuhg input
-		// track open and close parens
-		switch val := input[i]; val {
+		// iterate through input, always append onto the flattened stack
+		// track open paren indices (in the flattened stack)
+		// on closing parens, use the top of the stackOpenIndices to flatten
+		// the most recent set of values/operations within parens, and replace
+		// their opening paren with the flattneed value
+		stackFlattened = append(stackFlattened, input[i])
+		switch input[i] {
 		case "(":
-			stack = append(stack, i)
+			stackOpenIndices = append(stackOpenIndices, len(stackFlattened)-1)
 		case ")":
 			// on close parens, pass a section tohandleFlat
 			// then remove a bunch of shit from input,
-			openIndex := stack[len(stack)-1]
-			stack = stack[:len(stack)-1]
-			if input[openIndex] == "+" || input[openIndex] == "*" {
-				openIndex++
-			}
-			sliToFlatten := input[openIndex+1 : i] // will not include the closing paren
+			openIndex := stackOpenIndices[len(stackOpenIndices)-1]
+			stackOpenIndices = stackOpenIndices[:len(stackOpenIndices)-1]
 
-			flatVal := handleFlat(sliToFlatten)
-			input[openIndex] = flatVal
+			// do not include leading or trailing paren
+			sliToFlatten := stackFlattened[openIndex+1 : len(stackFlattened)-1]
+			stackFlattened[openIndex] = flatteningFunc(sliToFlatten)
 
-			copy(input[openIndex+1:], input[i+1:])
-			input = input[:len(input)-(i-openIndex)]
-			i = openIndex
-		default:
-			// continue along
+			// remove the values that were flattened off the top of the stack
+			stackFlattened = stackFlattened[:openIndex+1]
 		}
 
 	}
-
-	return mathutil.StrToInt(handleFlat(input))
+	// slice should now be flat
+	return mathutil.StrToInt(flatteningFunc(stackFlattened))
 }
 
-func handleFlat(input []string) string {
+func calcFlatSlicePart1(input []string) string {
 	for _, v := range input {
 		if v == "(" || v == ")" {
-			panic("unexpected paren in flat input")
+			panic(fmt.Sprintf("unexpected paren in flat input, %v", input))
+		}
+	}
+
+	result := mathutil.StrToInt(input[0])
+
+	for i := range input {
+		if i+2 < len(input) {
+			switch input[i+1] {
+			case "+":
+				result += mathutil.StrToInt(input[i+2])
+			case "*":
+				result *= mathutil.StrToInt(input[i+2])
+			}
+		}
+	}
+
+	return mathutil.IntToStr(result)
+}
+
+func calcFlatSlicePart2(input []string) string {
+	for _, v := range input {
+		if v == "(" || v == ")" {
+			panic(fmt.Sprintf("unexpected paren in flat input, %v", input))
 		}
 	}
 
@@ -157,13 +126,9 @@ func handleFlat(input []string) string {
 		if input[i] == "+" {
 			toLeft := input[i-1]
 			toRight := input[i+1]
-			if numReg.MatchString(toLeft) && numReg.MatchString(toRight) {
-				input[i-1] = mathutil.IntToStr(mathutil.StrToInt(toLeft) + mathutil.StrToInt(toRight))
-				// remove two things
-				for j := i; j < len(input)-2; j++ {
-					input[j] = input[j+2]
-				}
-				input = input[:len(input)-2]
+			if isNum(toLeft) && isNum(toRight) {
+				input[i-1] = addStrings(toLeft, toRight)
+				input = splice(input, i, 2)
 				i--
 			}
 		}
@@ -174,19 +139,36 @@ func handleFlat(input []string) string {
 		if input[i] == "*" {
 			toLeft := input[i-1]
 			toRight := input[i+1]
-			if numReg.MatchString(toLeft) && numReg.MatchString(toRight) {
-				input[i-1] = mathutil.IntToStr(mathutil.StrToInt(toLeft) * mathutil.StrToInt(toRight))
-				// remove two things
-				for j := i; j < len(input)-2; j++ {
-					input[j] = input[j+2]
-				}
-				input = input[:len(input)-2]
+			if isNum(toLeft) && isNum(toRight) {
+				input[i-1] = multiplyStrings(toLeft, toRight)
+				input = splice(input, i, 2)
 				i--
 			}
 		}
 	}
 
 	return input[0]
+}
+
+var numReg = regexp.MustCompile("[0-9]")
+
+func isNum(str string) bool {
+	return numReg.MatchString(str)
+}
+
+func addStrings(strs ...string) string {
+	var sum int
+	for _, str := range strs {
+		sum += mathutil.StrToInt(str)
+	}
+	return mathutil.IntToStr(sum)
+}
+func multiplyStrings(strs ...string) string {
+	sum := 1
+	for _, str := range strs {
+		sum *= mathutil.StrToInt(str)
+	}
+	return mathutil.IntToStr(sum)
 }
 
 // removes a particular number of elements from the middle of the slice
