@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/datastructures"
+	"github.com/alexchao26/advent-of-code-go/data-structures/heap"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -114,7 +114,7 @@ func part2(input string) int {
 	depth, targetX, targetY := parseInput(input)
 	regionCalculator := memoRegionTypeCalculator(depth, targetX, targetY)
 
-	heap := datastructures.NewMinHeap()
+	heap := heap.NewMinHeap()
 	firstNode := node{
 		coords:     [2]int{0, 0},
 		regionType: regionCalculator(0, 0),
@@ -171,7 +171,7 @@ func (n node) Value() int {
 	return n.totalTime
 }
 
-func step(heap *datastructures.MinHeap, eqCoordsToMinDist map[equipmentType]map[[2]int]int, regionCalculator func(x, y int) regionType) node {
+func step(heap *heap.MinHeap, eqCoordsToMinDist map[equipmentType]map[[2]int]int, regionCalculator func(x, y int) regionType) node {
 	// remove node from heap, this will be returned at the end
 	minNodeInterface := heap.Remove()
 	if minNodeInterface == nil {

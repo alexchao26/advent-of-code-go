@@ -1,4 +1,4 @@
-package datastructures
+package heap
 
 // MinHeap is an implementation of a min heap
 type MinHeap struct {
@@ -45,6 +45,14 @@ type heap struct {
 // nodes must be be able to state their value to be sorted by
 type heapNode interface {
 	Value() int
+}
+
+// Front returns the first node in the heap, nil if the heap is empty
+func (h *heap) Front() heapNode {
+	if len(h.nodes) == 0 {
+		return nil
+	}
+	return h.nodes[0]
 }
 
 // Add appends a new node onto the heap and heapifies it
