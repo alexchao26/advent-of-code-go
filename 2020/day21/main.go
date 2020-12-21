@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"sort"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -15,32 +15,110 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
+	part1Ans, part2Ans := allergenAssessment(util.ReadFile("./input.txt"))
 	if part == 1 {
-		ans := part1(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
+		fmt.Println("Output:", part1Ans)
 	} else {
-		ans := part2(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
+		fmt.Println("Output:", part2Ans)
 	}
 }
 
-func part1(input string) int {
-	parsed := parseInput(input)
-	_ = parsed
+// leaderboard: 225/127, closest yet!
+func allergenAssessment(input string) (part1Ans int, part2Ans string) {
+	allergensToPossibleIngredients := map[string][]string{}
+	ingredientCounts := map[string]int{}
 
-	return 0
-}
+	for _, line := range strings.Split(input, "\n") {
+		parts := strings.Split(line, " (contains ")
+		ingredients := strings.Split(parts[0], " ")
+		allergens := strings.Split(strings.Trim(parts[1], ")"), ", ")
 
-func part2(input string) int {
-	return 0
-}
+		// count up the appearances for each ingredient
+		for _, ingred := range ingredients {
+			ingredientCounts[ingred]++
+		}
 
-func parseInput(input string) (ans []int) {
-	lines := strings.Split(input, "\n")
-	for _, l := range lines {
-		ans = append(ans, mathutil.StrToInt(l))
+		// generate all possible ingredients that could be a particular allergen
+		for _, a := range allergens {
+			// if no ingredients are there, set this as the initial list
+			if allergensToPossibleIngredients[a] == nil {
+				allergensToPossibleIngredients[a] = ingredients
+			} else {
+				// otherwise take the inner join/overlap to eliminate ingredients
+				allergensToPossibleIngredients[a] = innerJoin(allergensToPossibleIngredients[a], ingredients)
+			}
+		}
 	}
-	return ans
+
+	// iterate through the allergens to possible map and if a slice of length 1
+	// is found, remove that ingredient from all other value slices
+	// do this until every slice has only one possible ingredient
+	for {
+		allSingle := true
+		for allergen, possible := range allergensToPossibleIngredients {
+			if len(possible) != 1 {
+				allSingle = false
+			} else {
+				// remove this name from all lists
+				for otherAllergen, otherIngredients := range allergensToPossibleIngredients {
+					if otherAllergen != allergen {
+						allergensToPossibleIngredients[otherAllergen] = removeFromSlice(otherIngredients, possible[0])
+					}
+				}
+			}
+		}
+		if allSingle {
+			break
+		}
+	}
+
+	// remove the allergens from the ingredientsCount map
+	for _, hashedName := range allergensToPossibleIngredients {
+		delete(ingredientCounts, hashedName[0])
+	}
+
+	// for part 1: count up the total occurrences of non-allergen ingredients
+	var count int
+	for _, ct := range ingredientCounts {
+		count += ct
+	}
+
+	// for part 2: get a list of all allergens, sort them, then in order, add the
+	// hashed name to a canonical dangerous list
+	var names []string
+	for k := range allergensToPossibleIngredients {
+		names = append(names, k)
+	}
+	sort.Strings(names)
+
+	var canonical []string
+	for _, n := range names {
+		canonical = append(canonical, allergensToPossibleIngredients[n][0])
+	}
+
+	return count, strings.Join(canonical, ",")
+}
+
+func innerJoin(set1, set2 []string) []string {
+	map1 := map[string]bool{}
+	for _, v := range set1 {
+		map1[v] = true
+	}
+
+	var unionSet []string
+	for _, v := range set2 {
+		if map1[v] {
+			unionSet = append(unionSet, v)
+		}
+	}
+	return unionSet
+}
+func removeFromSlice(sli []string, strToFind string) []string {
+	for i, v := range sli {
+		if v == strToFind {
+			sli[i] = sli[len(sli)-1]
+			sli = sli[:len(sli)-1]
+		}
+	}
+	return sli
 }
