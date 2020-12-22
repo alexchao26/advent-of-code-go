@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/mathutil"
+
 	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
@@ -52,12 +54,26 @@ func part1(input string) int {
 
 func part2(input string) int {
 	deck1, deck2 := parseInput(input)
-	winningScore, _ := recursiveGame(deck1, deck2)
+	winningScore, _ := recursiveGame(deck1, deck2, true)
 	return winningScore
 }
 
 // leaderboard: 997
-func recursiveGame(deck1, deck2 []int) (finalScore int, player1Wins bool) {
+func recursiveGame(deck1, deck2 []int, isMainGame bool) (finalScore int, player1Wins bool) {
+	// after the fact optimization from: https://www.reddit.com/r/adventofcode/comments/khyjgv/2020_day_22_solutions/ggpcsnd
+	// reduces part2 time from ~30s to <0.5s
+	// IF player 1 has the largest present card AND the card's value is greater
+	// than the largest number of cards that a subgame could contain (lengths - 2)
+	// THEN a subgame will never start when player1's top card is that max card,
+	//   and player 1 can never lose that card, so at some point, a pattern will
+	//   repeat which leads to player 1 winning
+	if !isMainGame {
+		max1, max2 := mathutil.MaxInt(deck1...), mathutil.MaxInt(deck2...)
+		if max1 > max2 && max1 >= len(deck1)+len(deck2)-2 {
+			return 0, true
+		}
+	}
+
 	previousHands1 := map[string]bool{}
 	previousHands2 := map[string]bool{}
 
@@ -75,7 +91,7 @@ func recursiveGame(deck1, deck2 []int) (finalScore int, player1Wins bool) {
 				player1Wins = top1 > top2
 			} else {
 				// otherwise recurse
-				_, player1Wins = recursiveGame(append([]int{}, deck1[1:top1+1]...), append([]int{}, deck2[1:top2+1]...))
+				_, player1Wins = recursiveGame(append([]int{}, deck1[1:top1+1]...), append([]int{}, deck2[1:top2+1]...), false)
 			}
 		}
 
@@ -89,6 +105,11 @@ func recursiveGame(deck1, deck2 []int) (finalScore int, player1Wins bool) {
 		deck2 = deck2[1:]
 	}
 
+	if !isMainGame {
+		// player1Wins boolean is equivalent to if their deck does not have zero cards
+		return 0, len(deck1) != 0
+	}
+
 	winningDeck := append(deck1, deck2...)
 	var sumOfProducts int
 	multiplier := 1
@@ -97,8 +118,7 @@ func recursiveGame(deck1, deck2 []int) (finalScore int, player1Wins bool) {
 		multiplier++
 	}
 
-	// player1Wins boolean is equivalent to if their deck does not have zero cards
-	return sumOfProducts, len(deck1) != 0 // 997
+	return sumOfProducts, false // 997
 }
 
 func parseInput(input string) ([]int, []int) {
