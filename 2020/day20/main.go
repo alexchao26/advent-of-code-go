@@ -70,7 +70,7 @@ func part2(input string) int {
 	// get the coordinates of all monsters by iterating over all possible
 	// orientations of the image
 	var monsterCoords [][2]int
-	for _, opt := range generateGridOrientations(image) {
+	for _, opt := range algos.AllGridOrientations(image) {
 		monsterCoords = findMonsterCoords(opt)
 		// assuming there's only one orientation of image with valid monsters
 		if len(monsterCoords) > 0 {
@@ -121,19 +121,6 @@ func parseTilesFromInput(input string) []*tile {
 	return ans
 }
 
-func generateGridOrientations(grid [][]string) [][][]string {
-	var options [][][]string
-	for i := 0; i < 2; i++ {
-		for j := 0; j < 4; j++ {
-			options = append(options, grid)
-			grid = algos.RotateStringGrid(grid)
-		}
-		grid = algos.MirrorStringGrid(grid)
-	}
-	// note: there will likely be duplicates in there... but that's fine...
-	return options
-}
-
 func backtrackAssemble(tiles []*tile, assembledTiles [][]*tile, usedIndices map[int]bool) [][]*tile {
 	// pray it's a square...
 	edgeSize := int(math.Sqrt(float64(len(tiles))))
@@ -153,7 +140,7 @@ func backtrackAssemble(tiles []*tile, assembledTiles [][]*tile, usedIndices map[
 				for i, t := range tiles {
 					if !usedIndices[i] {
 						// iterate over the OPTIONS for a particular tile, i.e. all 8 images of it...
-						for _, opt := range generateGridOrientations(t.contents) {
+						for _, opt := range algos.AllGridOrientations(t.contents) {
 							// check if setting this tile is okay with (if applicable) tiles above
 							// and to the left
 							if row != 0 { // check above

@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
 	"github.com/alexchao26/advent-of-code-go/algos"
-
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -74,15 +72,7 @@ func parseInput(input string) map[string][][]string {
 		}
 		return str
 	}
-	mirrorImageGrid := func(grid [][]string) (flipped [][]string) {
-		for i := range grid {
-			flipped = append(flipped, []string{})
-			for j := len(grid[i]) - 1; j >= 0; j-- {
-				flipped[i] = append(flipped[i], grid[i][j])
-			}
-		}
-		return flipped
-	}
+
 	rules := map[string][][]string{}
 	for _, line := range strings.Split(input, "\n") {
 		parts := strings.Split(line, " => ")
@@ -92,7 +82,7 @@ func parseInput(input string) map[string][][]string {
 		for i := 0; i < 4; i++ {
 			keyGrid = algos.RotateStringGrid(keyGrid)
 			rules[stringifyGrid(keyGrid)] = resultGrid
-			rules[stringifyGrid((mirrorImageGrid(keyGrid)))] = resultGrid
+			rules[stringifyGrid((algos.MirrorStringGrid(keyGrid)))] = resultGrid
 		}
 	}
 	return rules
@@ -108,7 +98,7 @@ func tick(grid [][]string, rules map[string][][]string) [][]string {
 	} else if len(grid)%3 == 0 {
 		edgeSize = 3
 	} else {
-		panic("grid is not evenly divisible by 2 or 3, got " + mathutil.IntToStr(len(grid)))
+		panic("grid is not evenly divisible by 2 or 3, got " + cast.ToString(len(grid)))
 	}
 
 	// iterate over like a sudoku grid, r and c iterate over the top left corner
