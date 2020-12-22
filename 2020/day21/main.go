@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/data-structures/slice"
+
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -45,7 +47,7 @@ func allergenAssessment(input string) (part1Ans int, part2Ans string) {
 				allergensToPossibleIngredients[a] = ingredients
 			} else {
 				// otherwise take the inner join/overlap to eliminate ingredients
-				allergensToPossibleIngredients[a] = innerJoin(allergensToPossibleIngredients[a], ingredients)
+				allergensToPossibleIngredients[a] = slice.IntersectionStrings(allergensToPossibleIngredients[a], ingredients)
 			}
 		}
 	}
@@ -62,7 +64,7 @@ func allergenAssessment(input string) (part1Ans int, part2Ans string) {
 				// remove this name from all lists
 				for otherAllergen, otherIngredients := range allergensToPossibleIngredients {
 					if otherAllergen != allergen {
-						allergensToPossibleIngredients[otherAllergen] = removeFromSlice(otherIngredients, possible[0])
+						allergensToPossibleIngredients[otherAllergen] = slice.RemoveAllStrings(otherIngredients, possible[0])
 					}
 				}
 			}
@@ -97,28 +99,4 @@ func allergenAssessment(input string) (part1Ans int, part2Ans string) {
 	}
 
 	return count, strings.Join(canonical, ",")
-}
-
-func innerJoin(set1, set2 []string) []string {
-	map1 := map[string]bool{}
-	for _, v := range set1 {
-		map1[v] = true
-	}
-
-	var unionSet []string
-	for _, v := range set2 {
-		if map1[v] {
-			unionSet = append(unionSet, v)
-		}
-	}
-	return unionSet
-}
-func removeFromSlice(sli []string, strToFind string) []string {
-	for i, v := range sli {
-		if v == strToFind {
-			sli[i] = sli[len(sli)-1]
-			sli = sli[:len(sli)-1]
-		}
-	}
-	return sli
 }
