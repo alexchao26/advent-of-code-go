@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/algos"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -92,7 +93,7 @@ func parseInput(input string) (botsMap map[int][]int, rules []rule) {
 			}
 			botsMap[botID] = append(botsMap[botID], value)
 		} else {
-			parts := splitOn(line, []string{" gives ", " and "})
+			parts := algos.SplitStringOn(line, []string{" gives ", " and "})
 			r := rule{lowRule: parts[1], highRule: parts[2]}
 			_, err := fmt.Sscanf(parts[0], "bot %d", &r.botID)
 			if err != nil {
@@ -102,20 +103,4 @@ func parseInput(input string) (botsMap map[int][]int, rules []rule) {
 		}
 	}
 	return botsMap, rules
-}
-
-func splitOn(in string, cutset []string) []string {
-	parts := strings.Split(in, cutset[0])
-	cutset = cutset[1:]
-	var done bool
-	for !done && len(cutset) > 0 {
-		divider := cutset[0]
-		cutset = cutset[1:]
-		var newParts []string
-		for _, oldPart := range parts {
-			newParts = append(newParts, strings.Split(oldPart, divider)...)
-		}
-		parts = newParts
-	}
-	return parts
 }
