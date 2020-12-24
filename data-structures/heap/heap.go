@@ -80,6 +80,10 @@ func (h *heap) Remove() heapNode {
 	return rootNode
 }
 
+func (h *heap) Length() int {
+	return len(h.nodes)
+}
+
 func (h *heap) swap(i, j int) {
 	h.nodes[i], h.nodes[j] = h.nodes[j], h.nodes[i]
 }
