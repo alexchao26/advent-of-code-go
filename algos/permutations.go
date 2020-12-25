@@ -1,5 +1,7 @@
 package algos
 
+import "strings"
+
 // MakePermutations will make all permutations of the numbers input
 // returns a pointer to avoid copying a large number of permutations
 func MakePermutations(numbers []int) *[][]int {
@@ -31,4 +33,23 @@ func swapRecurseBacktrack(numbers []int, startIndex int, results *[][]int) {
 		// backtrack
 		numbers[startIndex], numbers[i] = numbers[i], numbers[startIndex]
 	}
+}
+
+// MakeStringPermutations generates all permutations for a given string
+func MakeStringPermutations(str string) []string {
+	return recurse(strings.Split(str, ""), 0)
+}
+
+func recurse(sli []string, index int) []string {
+	if index == len(sli) {
+		return []string{strings.Join(sli, "")}
+	}
+
+	var perms []string
+	for i := index; i < len(sli); i++ {
+		sli[i], sli[index] = sli[index], sli[i]
+		perms = append(perms, recurse(sli, index+1)...)
+		sli[i], sli[index] = sli[index], sli[i]
+	}
+	return perms
 }
