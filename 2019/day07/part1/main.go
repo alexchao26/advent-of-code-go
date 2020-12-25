@@ -1,8 +1,3 @@
-/*
-Intcode struct is defined within this file
-MakePermutations is in the util package as that will likely be reused
-*/
-
 package main
 
 import (
@@ -27,12 +22,12 @@ func main() {
 	}
 
 	// Make perms via a util function
-	perms := algos.MakePermutations([]int{0, 1, 2, 3, 4})
+	perms := algos.MakeIntPermutations([]int{0, 1, 2, 3, 4})
 
 	// iterate over all perms and run through a single pass of the Amps
 	// if the final output (from Amp E) is higher, update the highestOutput variable
 	highestOutput := 0
-	for _, perm := range *perms {
+	for _, perm := range perms {
 		// initialize 5 computers
 		ampA := MakeComputer(inputNumbers, perm[0])
 		ampB := MakeComputer(inputNumbers, perm[1])

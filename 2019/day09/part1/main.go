@@ -1,16 +1,12 @@
-/*
-Intcode struct is defined within this file
-MakePermutations is in the util package as that will likely be reused
-*/
-
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

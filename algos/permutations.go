@@ -2,45 +2,34 @@ package algos
 
 import "strings"
 
-// MakePermutations will make all permutations of the numbers input
-// returns a pointer to avoid copying a large number of permutations
-func MakePermutations(numbers []int) *[][]int {
-	result := make([][]int, 0)
-
-	swapRecurseBacktrack(numbers, 0, &result)
-
-	return &result
+// MakeIntPermutations will make all permutations of the numbers input
+func MakeIntPermutations(numbers []int) [][]int {
+	return recurseInts(numbers, 0)
 }
 
 // helper function to generate permutations
-func swapRecurseBacktrack(numbers []int, startIndex int, results *[][]int) {
+func recurseInts(numbers []int, startIndex int) [][]int {
 	if startIndex == len(numbers) {
-		// make a copy of the perm
-		perm := make([]int, len(numbers))
-		copy(perm, numbers)
-
-		// assign the value at the pointer results to the appended slice (dereferenced) results w/ perm
-		*results = append(*results, perm)
+		// makes a copy using append
+		return [][]int{append([]int{}, numbers...)}
 	}
 
+	var perms [][]int
 	for i := startIndex; i < len(numbers); i++ {
-		// swap numbers
+		// swap, append perms, backtrack
 		numbers[startIndex], numbers[i] = numbers[i], numbers[startIndex]
-
-		// recurse with startIndex incremented
-		swapRecurseBacktrack(numbers, startIndex+1, results)
-
-		// backtrack
+		perms = append(perms, recurseInts(numbers, startIndex+1)...)
 		numbers[startIndex], numbers[i] = numbers[i], numbers[startIndex]
 	}
+	return perms
 }
 
 // MakeStringPermutations generates all permutations for a given string
 func MakeStringPermutations(str string) []string {
-	return recurse(strings.Split(str, ""), 0)
+	return recurseStrings(strings.Split(str, ""), 0)
 }
 
-func recurse(sli []string, index int) []string {
+func recurseStrings(sli []string, index int) []string {
 	if index == len(sli) {
 		return []string{strings.Join(sli, "")}
 	}
@@ -48,7 +37,7 @@ func recurse(sli []string, index int) []string {
 	var perms []string
 	for i := index; i < len(sli); i++ {
 		sli[i], sli[index] = sli[index], sli[i]
-		perms = append(perms, recurse(sli, index+1)...)
+		perms = append(perms, recurseStrings(sli, index+1)...)
 		sli[i], sli[index] = sli[index], sli[i]
 	}
 	return perms
