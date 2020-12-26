@@ -3,7 +3,10 @@ package cast
 // Suite of casting functions to speed up solutions
 // This is NOT idiomatic Go... but AOC isn't about that...
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 // ToInt will case a given arg into an int type.
 // Supported types are:
@@ -18,7 +21,7 @@ func ToInt(arg interface{}) int {
 			panic("error converting string to int " + err.Error())
 		}
 	default:
-		panic("unhandled type for int casting")
+		panic(fmt.Sprintf("unhandled type for int casting %T", arg))
 	}
 	return val
 }
@@ -39,7 +42,7 @@ func ToString(arg interface{}) string {
 	case rune:
 		str = string(arg.(rune))
 	default:
-		panic("unhandled type for string casting")
+		panic(fmt.Sprintf("unhandled type for string casting %T", arg))
 	}
 	return str
 }
