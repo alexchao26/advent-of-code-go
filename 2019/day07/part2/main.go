@@ -22,7 +22,7 @@ func main() {
 	}
 
 	// Make perms via a util function
-	perms := algos.MakeIntPermutations([]int{5, 6, 7, 8, 9})
+	perms := algos.PermuteIntSlice([]int{5, 6, 7, 8, 9})
 
 	// iterate over all perms and run through a single pass of the Amps
 	// if the final output (from Amp E) is higher, update the highestOutput variable

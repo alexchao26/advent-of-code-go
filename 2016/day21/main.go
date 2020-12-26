@@ -39,7 +39,7 @@ func part1(input string, starting string, target string) string {
 		return runSteps(starting)
 	}
 
-	for _, p := range algos.MakeStringPermutations(starting) {
+	for _, p := range algos.PermuteString(starting) {
 		if runSteps(p) == target {
 			return p
 		}
