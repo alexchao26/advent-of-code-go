@@ -49,7 +49,9 @@ func ToString(arg interface{}) string {
 
 const (
 	ASCIICodeCapA   = int('A') // 65
+	ASCIICodeCapZ   = int('Z') // 65
 	ASCIICodeLowerA = int('a') // 97
+	ASCIICodeLowerZ = int('z') // 97
 )
 
 // ToASCIICode returns the ascii code of a given input
