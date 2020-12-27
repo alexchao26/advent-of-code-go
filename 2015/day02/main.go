@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -35,7 +35,7 @@ func part1(input string) int {
 		totalSqFt += x * y * 2
 		totalSqFt += x * z * 2
 		totalSqFt += z * y * 2
-		totalSqFt += mathutil.MinInt(x*y, y*z, x*z) // slack in wrapping paper...
+		totalSqFt += mathy.MinInt(x*y, y*z, x*z) // slack in wrapping paper...
 	}
 
 	return totalSqFt
@@ -56,7 +56,7 @@ func part2(input string) int {
 			2 * (y + z),
 			2 * (x + z),
 		}
-		totalLen += mathutil.MinInt(sides...)
+		totalLen += mathy.MinInt(sides...)
 	}
 	return totalLen
 }

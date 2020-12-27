@@ -7,8 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -53,7 +52,7 @@ func part1(input string) int {
 }
 
 func sumAbs(nums [3]int) int {
-	return mathutil.AbsInt(nums[0]) + mathutil.AbsInt(nums[1]) + mathutil.AbsInt(nums[2])
+	return mathy.AbsInt(nums[0]) + mathy.AbsInt(nums[1]) + mathy.AbsInt(nums[2])
 }
 
 func part2(input string) int {

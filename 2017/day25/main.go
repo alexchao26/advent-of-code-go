@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -34,7 +34,7 @@ func part1(input string) int {
 		currentStateName = rulesToFollow.nextState
 	}
 
-	return mathutil.SumIntSlice(bigArray)
+	return mathy.SumIntSlice(bigArray)
 }
 
 type ruleset struct {

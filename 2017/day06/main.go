@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -71,7 +71,7 @@ func memoryReallocation(input string, part int) int {
 func parseInput(input string) (ans [16]int) {
 	nums := strings.Split(input, "\t")
 	for i, num := range nums {
-		ans[i] = mathutil.StrToInt(num)
+		ans[i] = cast.ToInt(num)
 	}
 	return ans
 }

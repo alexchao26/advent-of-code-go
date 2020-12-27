@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -73,7 +73,7 @@ func parseInput(input string) (ans []int) {
 	lines := strings.Split(input, "\n")
 	for _, l := range lines {
 		split := strings.Split(l, " starts with ")
-		ans = append(ans, mathutil.StrToInt(split[1]))
+		ans = append(ans, cast.ToInt(split[1]))
 	}
 	return ans
 }

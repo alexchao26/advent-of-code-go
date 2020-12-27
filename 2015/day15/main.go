@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -46,17 +46,17 @@ func cookieScience(input string) (int, int) {
 
 				// make negatives zero, without this two negative scores could
 				// make a very large positive
-				cap = mathutil.MaxInt(0, cap)
-				dur = mathutil.MaxInt(0, dur)
-				fla = mathutil.MaxInt(0, fla)
-				tex = mathutil.MaxInt(0, tex)
+				cap = mathy.MaxInt(0, cap)
+				dur = mathy.MaxInt(0, dur)
+				fla = mathy.MaxInt(0, fla)
+				tex = mathy.MaxInt(0, tex)
 
 				score := cap * dur * fla * tex
 
 				if cal == 500 {
-					best500CalScore = mathutil.MaxInt(best500CalScore, score)
+					best500CalScore = mathy.MaxInt(best500CalScore, score)
 				}
-				bestScore = mathutil.MaxInt(bestScore, score)
+				bestScore = mathy.MaxInt(bestScore, score)
 			}
 		}
 	}

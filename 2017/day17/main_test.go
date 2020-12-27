@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/alexchao26/advent-of-code-go/util"
@@ -21,7 +22,12 @@ func Test_spinlock(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Logf("Running %s", tt.name)
 			if tt.name == "actual_part2" {
-				t.Log("This one could take a while, it has 50 million steps to run")
+				// Print using fmt b/c it will be messaged to the terminal regardless
+				// of verbose flag. To warn (me) that this test takes forever...
+				fmt.Println("WARNING: REALLY LONG TEST, 50 million steps to run")
+				if testing.Short() {
+					t.Skip("Skipping long test in short mode")
+				}
 			}
 			if got := spinlock(tt.input, tt.part); got != tt.want {
 				t.Errorf("spinlock() = %v, want %v", got, tt.want)

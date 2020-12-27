@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -133,7 +132,7 @@ func parseInput(input string) (map[string][2][2]int, []int, [][]int) {
 	splitTicket := strings.Split(blocks[1], "\n")
 	var myTicket []int
 	for _, v := range strings.Split(splitTicket[1], ",") {
-		myTicket = append(myTicket, mathutil.StrToInt(v))
+		myTicket = append(myTicket, cast.ToInt(v))
 	}
 
 	// all values for nearby tickets
@@ -141,7 +140,7 @@ func parseInput(input string) (map[string][2][2]int, []int, [][]int) {
 	for _, nearby := range strings.Split(blocks[2], "\n")[1:] {
 		var near []int
 		for _, v := range strings.Split(nearby, ",") {
-			near = append(near, mathutil.StrToInt(v))
+			near = append(near, cast.ToInt(v))
 		}
 		nearbyTickets = append(nearbyTickets, near)
 	}

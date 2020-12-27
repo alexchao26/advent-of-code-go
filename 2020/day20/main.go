@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/algos"
-
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 

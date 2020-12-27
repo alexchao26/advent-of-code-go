@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -36,7 +35,7 @@ func hexEd(input string, part int) int {
 	for _, step := range steps {
 		tallyDirections[dirIndices[step]]++
 		distanceFromStart := getDistanceFromOrigin(tallyDirections)
-		furthest = mathutil.MaxInt(furthest, distanceFromStart)
+		furthest = mathy.MaxInt(furthest, distanceFromStart)
 	}
 
 	if part == 1 {
@@ -51,7 +50,7 @@ func getDistanceFromOrigin(tally []int) int {
 	for i := range tally {
 		if tally[i] != 0 {
 			oppositeIndex := (i + 3) % 6
-			smaller := mathutil.MinInt(tally[oppositeIndex], tally[i])
+			smaller := mathy.MinInt(tally[oppositeIndex], tally[i])
 			tally[oppositeIndex] -= smaller
 			tally[i] -= smaller
 		}
@@ -63,14 +62,14 @@ func getDistanceFromOrigin(tally []int) int {
 		toLeft := (i + 5) % 6
 		toRight := (i + 1) % 6
 		if tally[toLeft] > 0 && tally[toRight] > 0 {
-			smaller := mathutil.MinInt(tally[toLeft], tally[toRight])
+			smaller := mathy.MinInt(tally[toLeft], tally[toRight])
 			tally[toLeft] -= smaller
 			tally[toRight] -= smaller
 			tally[i] += smaller
 		}
 	}
 
-	distanceFromOrigin := mathutil.SumIntSlice(tally)
+	distanceFromOrigin := mathy.SumIntSlice(tally)
 
 	return distanceFromOrigin
 }

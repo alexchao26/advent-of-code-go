@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -40,7 +40,7 @@ func firewall(input string, part int) int {
 	for _, r := range allBlockedRanges {
 		endOfLastRange := merged[len(merged)-1][1]
 		if endOfLastRange >= r[0]-1 {
-			merged[len(merged)-1][1] = mathutil.MaxInt(endOfLastRange, r[1])
+			merged[len(merged)-1][1] = mathy.MaxInt(endOfLastRange, r[1])
 		} else {
 			merged = append(merged, r)
 		}

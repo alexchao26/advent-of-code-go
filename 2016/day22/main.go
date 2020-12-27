@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -54,8 +54,8 @@ func part2(input string) int {
 	var maxX, maxY int
 	var x, y int
 	for c, n := range nodes {
-		maxX = mathutil.MaxInt(c[0], maxX)
-		maxY = mathutil.MaxInt(c[1], maxY)
+		maxX = mathy.MaxInt(c[0], maxX)
+		maxY = mathy.MaxInt(c[1], maxY)
 		// getting the starting node, i.e. has zero used space
 		if n.used == 0 {
 			x = n.coord[1]

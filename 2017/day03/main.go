@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -24,7 +25,7 @@ func main() {
 }
 
 func part1(input string) int {
-	inputNum := mathutil.StrToInt(input)
+	inputNum := cast.ToInt(input)
 
 	directions := [][2]int{
 		{0, 1},  // right
@@ -60,11 +61,11 @@ func part1(input string) int {
 		number++ // increment number
 	}
 
-	return mathutil.ManhattanDistance(0, 0, row, col)
+	return mathy.ManhattanDistance(0, 0, row, col)
 }
 
 func part2(input string) int {
-	inputNum := mathutil.StrToInt(input)
+	inputNum := cast.ToInt(input)
 
 	directions := [][2]int{
 		{0, 1},  // right

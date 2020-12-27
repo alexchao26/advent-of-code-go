@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -69,10 +69,10 @@ func part2(input string) int {
 // busses are [2]int{index, busID}, not the best way to parse stuff but it works
 func parseInput(input string) (estimate int, busses [][2]int) {
 	lines := strings.Split(input, "\n")
-	estimate = mathutil.StrToInt(lines[0])
+	estimate = cast.ToInt(lines[0])
 	for index, busID := range strings.Split(lines[1], ",") {
 		if busID != "x" {
-			busses = append(busses, [2]int{index, mathutil.StrToInt(busID)})
+			busses = append(busses, [2]int{index, cast.ToInt(busID)})
 		}
 	}
 	return estimate, busses

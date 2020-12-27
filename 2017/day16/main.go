@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -43,7 +42,7 @@ func permPromenade(input string, part int) string {
 		for _, step := range steps {
 			switch step[0] {
 			case 's':
-				countToSpin := mathutil.StrToInt(step[1:])
+				countToSpin := cast.ToInt(step[1:])
 				fromEnd := programs[len(programs)-countToSpin:]
 				fromFront := programs[:len(programs)-countToSpin]
 				programs = append(fromEnd, fromFront...)

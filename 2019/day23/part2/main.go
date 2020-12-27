@@ -7,11 +7,12 @@ Network struct to store 50 instances of Intcode computers and 50 queues for thei
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

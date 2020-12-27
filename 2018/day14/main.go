@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -66,7 +66,7 @@ func part2(input string) int {
 func parseInput(input string) int {
 	lines := strings.Split(input, "\n")
 
-	return mathutil.StrToInt(lines[0])
+	return cast.ToInt(lines[0])
 }
 
 func step(recipes []int, elf1, elf2 int) ([]int, int, int) {

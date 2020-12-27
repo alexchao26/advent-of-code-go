@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -101,7 +101,7 @@ func reverse(nums []int, left, right int) []int {
 func parseInput(input string) (ans []int) {
 	nums := strings.Split(input, ",")
 	for _, num := range nums {
-		ans = append(ans, mathutil.StrToInt(num))
+		ans = append(ans, cast.ToInt(num))
 	}
 	return ans
 }

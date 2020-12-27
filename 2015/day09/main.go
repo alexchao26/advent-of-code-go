@@ -5,9 +5,8 @@ import (
 	"math"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
 	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -23,8 +22,8 @@ func travelingSalesman(input string) (int, int) {
 	max := 0
 	for k := range graph {
 		dfsMin, dfsMax := dfsTotalDistance(graph, k, map[string]bool{k: true})
-		min = mathutil.MinInt(min, dfsMin)
-		max = mathutil.MaxInt(max, dfsMax)
+		min = mathy.MinInt(min, dfsMin)
+		max = mathy.MaxInt(max, dfsMax)
 	}
 
 	return min, max
@@ -45,8 +44,8 @@ func dfsTotalDistance(graph mapGraph, entry string, visited map[string]bool) (mi
 
 			weight := graph[entry][k]
 			minRecurse, maxRecurse := dfsTotalDistance(graph, k, visited)
-			minDistance = mathutil.MinInt(minDistance, weight+minRecurse)
-			maxDistance = mathutil.MaxInt(maxDistance, weight+maxRecurse)
+			minDistance = mathy.MinInt(minDistance, weight+minRecurse)
+			maxDistance = mathy.MaxInt(maxDistance, weight+maxRecurse)
 
 			// backtrack
 			// delete to so length of visited is accurate

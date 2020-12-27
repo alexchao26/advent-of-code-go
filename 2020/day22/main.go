@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 
 	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
@@ -68,7 +68,7 @@ func recursiveGame(deck1, deck2 []int, isMainGame bool) (finalScore int, player1
 	//   and player 1 can never lose that card, so at some point, a pattern will
 	//   repeat which leads to player 1 winning
 	if !isMainGame {
-		max1, max2 := mathutil.MaxInt(deck1...), mathutil.MaxInt(deck2...)
+		max1, max2 := mathy.MaxInt(deck1...), mathy.MaxInt(deck2...)
 		if max1 > max2 && max1 >= len(deck1)+len(deck2)-2 {
 			return 0, true
 		}

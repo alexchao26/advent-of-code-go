@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/cast"
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -36,7 +36,7 @@ func eggnogCombinations(input string, target int, part int) int {
 	// part 2, get the number of combinations w/ the lowest length
 	minLen := math.MaxInt32
 	for _, comb := range allIndexCombinations {
-		minLen = mathutil.MinInt(minLen, len(comb))
+		minLen = mathy.MinInt(minLen, len(comb))
 	}
 
 	var count int

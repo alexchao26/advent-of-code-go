@@ -18,7 +18,7 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/algos"
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -390,7 +390,7 @@ func Draw(mapCoordsToType map[string]int) [][]int {
 	}
 
 	// Determine the bounds of the grid
-	edgeLength := 2 * mathutil.MaxInt(-lowY, -lowX, highY, highX)
+	edgeLength := 2 * mathy.MaxInt(-lowY, -lowX, highY, highX)
 
 	grid := make([][]int, edgeLength)
 	for i := 0; i < edgeLength; i++ {

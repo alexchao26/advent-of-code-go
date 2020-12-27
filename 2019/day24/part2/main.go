@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 // RecursiveWorld stores a big 3D matrix & will have associated methods

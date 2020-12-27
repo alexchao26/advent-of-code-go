@@ -1,17 +1,12 @@
-/*
-Intcode struct is defined within this file
-Helper function that converts strings to ASCII codes to be written to the computer
-	it could all be combined together into a new computer...
-*/
-
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

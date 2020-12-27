@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -88,7 +88,7 @@ func doMaths(input []string, flatteningFunc func([]string) string) int {
 
 	}
 	// slice should now be flat
-	return mathutil.StrToInt(flatteningFunc(stackFlattened))
+	return cast.ToInt(flatteningFunc(stackFlattened))
 }
 
 func calcFlatSlicePart1(input []string) string {
@@ -98,20 +98,20 @@ func calcFlatSlicePart1(input []string) string {
 		}
 	}
 
-	result := mathutil.StrToInt(input[0])
+	result := cast.ToInt(input[0])
 
 	for i := range input {
 		if i+2 < len(input) {
 			switch input[i+1] {
 			case "+":
-				result += mathutil.StrToInt(input[i+2])
+				result += cast.ToInt(input[i+2])
 			case "*":
-				result *= mathutil.StrToInt(input[i+2])
+				result *= cast.ToInt(input[i+2])
 			}
 		}
 	}
 
-	return mathutil.IntToStr(result)
+	return cast.ToString(result)
 }
 
 func calcFlatSlicePart2(input []string) string {
@@ -159,16 +159,16 @@ func isNum(str string) bool {
 func addStrings(strs ...string) string {
 	var sum int
 	for _, str := range strs {
-		sum += mathutil.StrToInt(str)
+		sum += cast.ToInt(str)
 	}
-	return mathutil.IntToStr(sum)
+	return cast.ToString(sum)
 }
 func multiplyStrings(strs ...string) string {
 	sum := 1
 	for _, str := range strs {
-		sum *= mathutil.StrToInt(str)
+		sum *= cast.ToInt(str)
 	}
-	return mathutil.IntToStr(sum)
+	return cast.ToString(sum)
 }
 
 // removes a particular number of elements from the middle of the slice

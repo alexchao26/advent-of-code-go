@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/cast"
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -127,7 +127,7 @@ func dfs(graph [][]int, entryIndex int, visited map[int]bool, returnToZero bool)
 			visited[i] = true
 
 			dist := val + dfs(graph, i, visited, returnToZero)
-			minDistance = mathutil.MinInt(minDistance, dist)
+			minDistance = mathy.MinInt(minDistance, dist)
 
 			delete(visited, i)
 		}

@@ -6,7 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/algo"
+	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -29,7 +30,7 @@ func main() {
 
 func part1(input string) int {
 	nums := parseInput(input)
-	nums = append(nums, mathutil.MaxInt(nums...)+3)
+	nums = append(nums, mathy.MaxInt(nums...)+3)
 	sort.Ints(nums)
 
 	var oneDiff, threeDiff int
@@ -51,7 +52,7 @@ func part1(input string) int {
 
 func part2(input string) int {
 	nums := parseInput(input)
-	nums = append(nums, mathutil.MaxInt(nums...)+3)
+	nums = append(nums, mathy.MaxInt(nums...)+3)
 	sort.Ints(nums)
 
 	// return dynamicProgramming(input)
@@ -63,7 +64,7 @@ func parseInput(input string) []int {
 
 	lines := strings.Split(input, "\n")
 	for _, l := range lines {
-		ans = append(ans, mathutil.StrToInt(l))
+		ans = append(ans, cast.ToInt(l))
 	}
 
 	return ans
@@ -100,16 +101,16 @@ func memoCountPossibilities(nums []int, lastJolt int) int {
 	return count
 }
 func makeMemoKey(nums []int, lastJolt int) string {
-	ans := algo.IntToStr(lastJolt) + "x"
+	ans := cast.ToString(lastJolt) + "x"
 	for _, v := range nums {
-		ans += algo.IntToStr(v)
+		ans += cast.ToString(v)
 	}
 	return ans
 }
 
 func dynamicProgramming(input string) int {
 	nums := parseInput(input)
-	nums = append(nums, mathutil.MaxInt(nums...)+3, 0)
+	nums = append(nums, mathy.MaxInt(nums...)+3, 0)
 	sort.Ints(nums)
 
 	// initialize table with "1 way" to get to zero jolts

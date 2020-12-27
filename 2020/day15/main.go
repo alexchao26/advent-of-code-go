@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -28,7 +28,7 @@ func main() {
 func rambunctiousRecitation(input string, turnToReturn int) int {
 	var startingNums []int
 	for _, num := range strings.Split(input, ",") {
-		startingNums = append(startingNums, mathutil.StrToInt(num))
+		startingNums = append(startingNums, cast.ToInt(num))
 	}
 
 	said := map[int][]int{}

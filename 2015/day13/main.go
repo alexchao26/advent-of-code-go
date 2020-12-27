@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/algos"
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -40,7 +40,7 @@ func knightsOfTheDinnerTable(input string, part int) int {
 
 	maxDiff := math.MinInt32
 	for _, p := range perms {
-		maxDiff = mathutil.MaxInt(maxDiff, calcHappinessDiff(graph, p))
+		maxDiff = mathy.MaxInt(maxDiff, calcHappinessDiff(graph, p))
 	}
 
 	return maxDiff

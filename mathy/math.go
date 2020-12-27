@@ -1,9 +1,4 @@
-package mathutil
-
-import (
-	"fmt"
-	"strconv"
-)
+package mathy
 
 func MaxInt(nums ...int) int {
 	maxNum := nums[0]
@@ -22,18 +17,6 @@ func MinInt(nums ...int) int {
 		}
 	}
 	return minNum
-}
-
-func StrToInt(in string) int {
-	num, err := strconv.Atoi(in)
-	if err != nil {
-		panic(fmt.Sprintf("converting string to number: %s", err))
-	}
-	return num
-}
-
-func IntToStr(in int) string {
-	return strconv.Itoa(in)
 }
 
 func AbsInt(in int) int {

@@ -10,11 +10,12 @@ NOTE: The "hold for an input" value was changed from -1 to -2 in the Intcode com
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

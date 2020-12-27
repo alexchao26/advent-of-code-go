@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -56,7 +55,7 @@ func reindeerOlympics(input string, part int) int {
 	if part == 1 {
 		var furthest int
 		for _, distSli := range reindeerToDistanceMap {
-			furthest = mathutil.MaxInt(distSli[2503], furthest)
+			furthest = mathy.MaxInt(distSli[2503], furthest)
 		}
 		return furthest
 	}
@@ -82,7 +81,7 @@ func reindeerOlympics(input string, part int) int {
 
 	var bestScore int
 	for _, v := range reindeerScores {
-		bestScore = mathutil.MaxInt(bestScore, v)
+		bestScore = mathy.MaxInt(bestScore, v)
 	}
 
 	return bestScore

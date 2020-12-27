@@ -1,17 +1,12 @@
-/*
-Intcode struct is defined within this file
-	- Every drone needs its own computer made, I let them get garbage collected as often
-	  as possible, not sure how extendable this is going to be to part 2
-*/
-
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

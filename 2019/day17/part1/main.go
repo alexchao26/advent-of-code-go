@@ -1,18 +1,12 @@
-/*
-Intcode struct is defined within this file
-Robot struct houses an Intcode computer and a method to initialize the floor details
-	- an algorithm in the main function traverses all tiles and checks all of its neighbors
-	- for all intersections that are found, their alignment parameters are calculated & added to a sum
-*/
-
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

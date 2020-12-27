@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -67,7 +68,7 @@ func part1(input string) int {
 		}
 	}
 
-	return mathutil.ManhattanDistance(0, 0, shipX, shipY)
+	return mathy.ManhattanDistance(0, 0, shipX, shipY)
 }
 
 func part2(input string) int {
@@ -111,7 +112,7 @@ func part2(input string) int {
 		}
 	}
 
-	return mathutil.ManhattanDistance(0, 0, shipX, shipY)
+	return mathy.ManhattanDistance(0, 0, shipX, shipY)
 }
 
 type instruction struct {
@@ -126,7 +127,7 @@ func parseInput(input string) []instruction {
 	for _, l := range lines {
 		inst := instruction{
 			action: l[:1],
-			value:  mathutil.StrToInt(l[1:]),
+			value:  cast.ToInt(l[1:]),
 		}
 		ans = append(ans, inst)
 	}

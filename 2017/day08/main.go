@@ -6,8 +6,8 @@ import (
 	"math"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -29,7 +29,7 @@ func calcRegisters(input string, part int) int {
 	var highestEverRegister int // for part 2
 	for _, inst := range instructions {
 		registerVal := registers[inst.conditional[0]]
-		compareVal := mathutil.StrToInt(inst.conditional[2])
+		compareVal := cast.ToInt(inst.conditional[2])
 		var conditionalResult bool
 		switch inst.conditional[1] {
 		case "==":
@@ -50,12 +50,12 @@ func calcRegisters(input string, part int) int {
 		if conditionalResult {
 			registers[inst.registerName] += inst.diff
 		}
-		highestEverRegister = mathutil.MaxInt(highestEverRegister, registers[inst.registerName])
+		highestEverRegister = mathy.MaxInt(highestEverRegister, registers[inst.registerName])
 	}
 
 	largestFinalRegister := -math.MaxInt32
 	for _, v := range registers {
-		largestFinalRegister = mathutil.MaxInt(largestFinalRegister, v)
+		largestFinalRegister = mathy.MaxInt(largestFinalRegister, v)
 	}
 
 	if part == 1 {
@@ -82,7 +82,7 @@ func parseInput(input string) []instruction {
 		}
 		inst := instruction{
 			registerName: parts[0],
-			diff:         mathutil.StrToInt(parts[2]),
+			diff:         cast.ToInt(parts[2]),
 			conditional:  [3]string{parts[4], parts[5], parts[6]},
 		}
 		if parts[1] == "dec" {

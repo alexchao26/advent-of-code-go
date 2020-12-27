@@ -1,11 +1,3 @@
-/*
-Intcode struct is defined within this file
-Robot struct houses an Intcode computer and its RecursiveMove method populates a map of
-	coordinates to the floor type (-1: wall, 1: hallway, 2: O2 tank, 5: origin)
-	That map is converted into a 2D grid (slice)
-	2D slice is passed to a backtracking & searching algorithm to find the shortest path
-*/
-
 package main
 
 import (
@@ -16,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/algos"
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -336,7 +328,7 @@ func Draw(mapCoordsToType map[string]int) [][]int {
 	}
 
 	// Determine the bounds of the grid
-	edgeLength := 2 * mathutil.MaxInt(-lowY, -lowX, highY, highX)
+	edgeLength := 2 * mathy.MaxInt(-lowY, -lowX, highY, highX)
 
 	grid := make([][]int, edgeLength)
 	for i := 0; i < edgeLength; i++ {

@@ -1,17 +1,13 @@
-/*
-Intcode struct is defined within this file
-Robot struct houses an Intcode computer and a method to initialize the floor details
-*/
-
 package main
 
 import (
-	"github.com/alexchao26/advent-of-code-go/util"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/alexchao26/advent-of-code-go/util"
 )
 
 func main() {

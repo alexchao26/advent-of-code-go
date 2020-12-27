@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -89,7 +89,7 @@ func part2(input string) string {
 }
 
 func parseInputs(input string) int {
-	return mathutil.StrToInt(strings.TrimSpace(input))
+	return cast.ToInt(strings.TrimSpace(input))
 }
 
 func generateGrid(gridSN int) [][]int {

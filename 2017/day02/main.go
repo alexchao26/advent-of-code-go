@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -28,7 +29,7 @@ func part1(input string) int {
 	rows := parseInput(input)
 	var checksum int
 	for _, r := range rows {
-		checksum += mathutil.MaxInt(r...) - mathutil.MinInt(r...)
+		checksum += mathy.MaxInt(r...) - mathy.MinInt(r...)
 	}
 	return checksum
 }
@@ -58,7 +59,7 @@ func parseInput(input string) (ans [][]int) {
 		ans = append(ans, []int{})
 		// split by tabs
 		for _, num := range strings.Split(l, "\t") {
-			ans[i] = append(ans[i], mathutil.StrToInt(num))
+			ans[i] = append(ans[i], cast.ToInt(num))
 		}
 	}
 	return ans

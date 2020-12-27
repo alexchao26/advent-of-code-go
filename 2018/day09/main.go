@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -54,13 +55,13 @@ func part1(input string) int {
 		playerTurn %= players
 	}
 
-	return mathutil.MaxInt(playerScores...)
+	return mathy.MaxInt(playerScores...)
 }
 
 func part2(input string) int {
 	// lazily modify input...
 	split := strings.Split(input, " ")
-	steps := mathutil.StrToInt(split[6]) * 100
+	steps := cast.ToInt(split[6]) * 100
 	split[6] = strconv.Itoa(steps)
 
 	return part1(strings.Join(split, " "))
@@ -68,7 +69,7 @@ func part2(input string) int {
 
 func parseInput(input string) (players int, lastPoints int) {
 	split := strings.Split(input, " ")
-	return mathutil.StrToInt(split[0]), mathutil.StrToInt(split[6])
+	return cast.ToInt(split[0]), cast.ToInt(split[6])
 }
 
 type CircularLinkedListNode struct {

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/cast"
-
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 

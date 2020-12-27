@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -52,11 +51,11 @@ func taxicab(input string, part int) int {
 			row += dirs[dirIndex][0]
 			col += dirs[dirIndex][1]
 			if visited[[2]int{row, col}] && part == 2 {
-				return mathutil.ManhattanDistance(0, 0, row, col)
+				return mathy.ManhattanDistance(0, 0, row, col)
 			}
 			visited[[2]int{row, col}] = true
 		}
 	}
 
-	return mathutil.ManhattanDistance(0, 0, row, col)
+	return mathy.ManhattanDistance(0, 0, row, col)
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -26,7 +26,7 @@ type llNode struct {
 }
 
 func spinlock(input string, part int) int {
-	steps := mathutil.StrToInt(input)
+	steps := cast.ToInt(input)
 
 	lastNumToAdd := 2017
 	if part == 2 {
@@ -48,6 +48,7 @@ func spinlock(input string, part int) int {
 		current = current.next
 
 		// progress log for part 2 brute force...
+		// todo optimize this slow pos
 		if i%1000000 == 0 {
 			log.Println(i, "steps done")
 		}

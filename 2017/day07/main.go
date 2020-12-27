@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -41,7 +41,7 @@ func part1(input string) string {
 	}
 
 	if len(allNames) != 1 {
-		panic("Expected one name left, got" + mathutil.IntToStr(len(allNames)))
+		panic("Expected one name left, got" + cast.ToString(len(allNames)))
 	}
 
 	// have to iterate over graph to get remaining name
@@ -138,7 +138,7 @@ func parseInput(input string) map[string]graphNode {
 
 		leftParts := strings.Split(parts[0], " ")
 		name := leftParts[0]
-		weight := mathutil.StrToInt(leftParts[1][1 : len(leftParts[1])-1])
+		weight := cast.ToInt(leftParts[1][1 : len(leftParts[1])-1])
 
 		var edges []string
 		if len(parts) == 2 {

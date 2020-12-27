@@ -6,8 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathutil"
-
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -140,13 +139,13 @@ func parseInput(input string) (rules map[int]*rule, messages []string) {
 			rules[num] = &rule{resolved: []string{char}}
 		} else {
 			split := strings.Split(r, ": ")
-			key := mathutil.StrToInt(split[0])
+			key := cast.ToInt(split[0])
 			newRule := rule{}
 			for _, ruleNums := range strings.Split(split[1], " | ") {
 				nums := strings.Split(ruleNums, " ")
 				var option []int
 				for _, n := range nums {
-					option = append(option, mathutil.StrToInt(n))
+					option = append(option, cast.ToInt(n))
 				}
 				newRule.options = append(newRule.options, option)
 			}
