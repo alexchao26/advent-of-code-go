@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -143,7 +144,7 @@ func (comp *Intcode) Step(input int) {
 			comp.Outputs = append(comp.Outputs, output)
 
 			// NOTE: day25 specific, print out the output message to play the game
-			fmt.Print(string(output))
+			fmt.Print(cast.ASCIIIntToChar(output))
 
 			comp.InstructionIndex += 2
 		// 5: jump-if-true: if first param != 0, move pointer to second param, else nothing

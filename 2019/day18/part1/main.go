@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexchao26/advent-of-code-go/cast"
+
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -134,7 +136,7 @@ func (dijk *DijkstraGrid) handleFrontOfQueue() (queueIsEmpty bool) {
 
 	// if door is found, add to keysNeeded as a lowercase (easier comparison later)
 	if ascii := int(cell.value[0]) - 'A'; ascii >= 0 && ascii < 26 {
-		cell.keysNeeded[string('a'+ascii)] = true
+		cell.keysNeeded[cast.ASCIIIntToChar('a'+ascii)] = true
 	}
 
 	// push neighbors into queue IF not already seen and not walls
@@ -261,13 +263,13 @@ func makeCacheKey(entry string, keysFound map[string]bool, totalKeys int) string
 	// TODO: move this into the graph? to avoid making it 910238190382 times
 	allKeys := make([]string, totalKeys)
 	for i := 0; i < totalKeys; i++ {
-		allKeys[i] = string(int('a') + i)
+		allKeys[i] = cast.ASCIIIntToChar(int('a') + i)
 	}
 
 	cacheKey := entry
 	// generate
 	for i := 0; i < totalKeys; i++ {
-		char := string(int('a') + i)
+		char := cast.ASCIIIntToChar(int('a') + i)
 		if !keysFound[char] {
 			cacheKey += char
 		}

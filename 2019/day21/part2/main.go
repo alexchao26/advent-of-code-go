@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -38,7 +39,7 @@ func main() {
 
 	// Print the output TEXT
 	for _, v := range comp.Outputs {
-		fmt.Printf("%v", string(v))
+		fmt.Printf("%v", cast.ASCIIIntToChar(v))
 	}
 
 	fmt.Printf("Hull damage: %v\n", comp.Outputs[len(comp.Outputs)-1])

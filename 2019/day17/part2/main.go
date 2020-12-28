@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -122,7 +123,7 @@ func (robot *Robot) GetFloorGrid() {
 			row++
 			robot.floorGrid = append(robot.floorGrid, []string{})
 		default:
-			tileType := string(v)
+			tileType := cast.ASCIIIntToChar(v)
 			robot.floorGrid[row] = append(robot.floorGrid[row], tileType)
 		}
 	}
@@ -333,7 +334,7 @@ func Print2DGrid(allValues []int) {
 			row++
 			floorGrid = append(floorGrid, []string{})
 		default:
-			tileType := string(v)
+			tileType := cast.ASCIIIntToChar(v)
 			floorGrid[row] = append(floorGrid[row], tileType)
 		}
 	}

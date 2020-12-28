@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/alexchao26/advent-of-code-go/cast"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -140,7 +141,7 @@ func (dijk *DijkstraGrid) handleFrontOfQueue() (queueIsEmpty bool) {
 
 	// if door is found, add to keysNeeded as a lowercase (easier comparison later)
 	if ascii := int(cell.value[0]) - 'A'; ascii >= 0 && ascii < 26 {
-		cell.keysNeeded[string('a'+ascii)] = true
+		cell.keysNeeded[cast.ASCIIIntToChar('a'+ascii)] = true
 	}
 
 	// push neighbors into queue IF not already seen and not walls
@@ -370,7 +371,7 @@ func removeDoorsWithoutKeys(quadrant [][]string) {
 	for _, rowSli := range quadrant {
 		for _, cell := range rowSli {
 			if ascii := int(cell[0] - 'a'); ascii >= 0 && ascii < 26 {
-				valuesToKeep[string(ascii+'a')] = true
+				valuesToKeep[cast.ASCIIIntToChar(ascii+'a')] = true
 			}
 		}
 	}
