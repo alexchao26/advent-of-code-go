@@ -7,9 +7,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/alexchao26/advent-of-code-go/mathy"
-
+	// first solution to use all the packages?!
+	"github.com/alexchao26/advent-of-code-go/algos"
 	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/mathy"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -36,11 +37,12 @@ func balancingPackages(input string, part int) int {
 		target = sum / 4
 	}
 
+	// make the gross assumption that if a group is found, and adds up to the
+	// target, the remaining elements will be able to be split into two equal
+	// groups. This is not always true, but the inputs are nicely generated
 	var individualGroups [][]int
 	for groupLen := 2; len(individualGroups) == 0; groupLen++ {
-		for i := 0; i < len(nums); i++ {
-			individualGroups = append(individualGroups, combinations(nums, groupLen, []int{}, i)...)
-		}
+		individualGroups = algos.CombinationsInts(nums, groupLen)
 
 		// validate that a combination adds up to the target sum
 		var validGroups [][]int
@@ -59,33 +61,12 @@ func balancingPackages(input string, part int) int {
 	return quantumEntanglement(individualGroups[0])
 }
 
-func combinations(nums []int, length int, combo []int, index int) [][]int {
-	if len(combo) == length {
-		return [][]int{append([]int{}, combo...)}
-	}
-	var combos [][]int
-	for i := index; i < len(nums); i++ {
-		combo = append(combo, nums[i])
-		with := combinations(nums, length, combo, i+1)
-		combos = append(combos, with...)
-		// backtrack
-		combo = combo[:len(combo)-1]
-	}
-
-	return combos
-}
-
 func sortGroups(groups [][]int) [][]int {
-	sort.Slice(groups, func(i, j int) bool {
-		return quantumEntanglement(groups[i]) < quantumEntanglement(groups[j])
+	clone := append([][]int{}, groups...)
+	sort.Slice(clone, func(i, j int) bool {
+		return quantumEntanglement(clone[i]) < quantumEntanglement(clone[j])
 	})
-	return groups
+	return clone
 }
 
-func quantumEntanglement(nums []int) int {
-	prod := 1
-	for _, n := range nums {
-		prod *= n
-	}
-	return prod
-}
+var quantumEntanglement = mathy.MultiplyIntSlice

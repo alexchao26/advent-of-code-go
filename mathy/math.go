@@ -33,3 +33,11 @@ func SumIntSlice(nums []int) int {
 	}
 	return sum
 }
+
+func MultiplyIntSlice(nums []int) int {
+	product := 1
+	for _, n := range nums {
+		product *= n
+	}
+	return product
+}
