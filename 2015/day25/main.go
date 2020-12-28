@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/cast"
@@ -15,32 +16,46 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
-	if part == 1 {
-		ans := part1(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
-	} else {
-		ans := part2(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
+	ans := letItSnow(util.ReadFile("./input.txt"))
+	fmt.Println("Output:", ans)
+}
+
+func letItSnow(input string) int {
+	var row, col int
+	input = strings.ReplaceAll(input, ",", "")
+	input = strings.ReplaceAll(input, ".", "")
+	for _, part := range strings.Split(input, " ") {
+		if regexp.MustCompile("[0-9]").MatchString(part) {
+			if row == 0 { // jeez i am getting lazy
+				row = cast.ToInt(part)
+			} else {
+				col = cast.ToInt(part)
+			}
+		}
 	}
-}
 
-func part1(input string) int {
-	parsed := parseInput(input)
-	_ = parsed
-
-	return 0
-}
-
-func part2(input string) int {
-	return 0
-}
-
-func parseInput(input string) (ans []int) {
-	lines := strings.Split(input, "\n")
-	for _, l := range lines {
-		ans = append(ans, cast.ToInt(l))
+	// the number of iterations to run can be calculated by:
+	// - finding the number of cells that in the triangle that is formed by each
+	//   diagonal prior to the incomplete one that the target cell is on
+	//     This triangle is generated from adding 1+2+3+4...+(row+col) 0-indexed
+	// - then the number of iterations for the incomplete diagonal, is equal to
+	//   the current column number (1-indexed)
+	var triangleBefore int
+	for i := 1; i <= row+col-2; i++ {
+		triangleBefore += i
 	}
-	return ans
+
+	numberOnThisDiagonal := col
+
+	// subtract one for starting cell
+	iterations := triangleBefore + numberOnThisDiagonal - 1
+
+	// and thankfully this runs quickly
+	code := 20151125
+	for i := 0; i < iterations; i++ {
+		code *= 252533
+		code %= 33554393
+	}
+
+	return code
 }
