@@ -15,32 +15,57 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
-	if part == 1 {
-		ans := part1(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
-	} else {
-		ans := part2(util.ReadFile("./input.txt"))
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
+	ans := simpleAssemblyComputer(util.ReadFile("./input.txt"), part)
+	fmt.Println("Output:", ans)
+}
+
+func simpleAssemblyComputer(input string, part int) int {
+	instructions := strings.Split(input, "\n")
+	var index int
+
+	registers := map[string]int{}
+	if part == 2 {
+		registers["a"] = 1
 	}
-}
 
-func part1(input string) int {
-	parsed := parseInput(input)
-	_ = parsed
-
-	return 0
-}
-
-func part2(input string) int {
-	return 0
-}
-
-func parseInput(input string) (ans []int) {
-	lines := strings.Split(input, "\n")
-	for _, l := range lines {
-		ans = append(ans, cast.ToInt(l))
+	for index < len(instructions) {
+		parts := strings.Split(instructions[index], " ")
+		switch parts[0] {
+		case "hlf":
+			reg := parts[1]
+			registers[reg] /= 2
+			index++
+		case "tpl":
+			reg := parts[1]
+			registers[reg] *= 3
+			index++
+		case "inc":
+			reg := parts[1]
+			registers[reg]++
+			index++
+		case "jmp":
+			diff := cast.ToInt(parts[1])
+			index += diff
+		case "jie":
+			reg := strings.Trim(parts[1], ",")
+			diff := cast.ToInt(parts[2])
+			if registers[reg]%2 == 0 {
+				index += diff
+			} else {
+				index++
+			}
+		case "jio":
+			reg := strings.Trim(parts[1], ",")
+			diff := cast.ToInt(parts[2])
+			if registers[reg] == 1 {
+				index += diff
+			} else {
+				index++
+			}
+		default:
+			panic("unhandled instruction type: " + parts[0])
+		}
 	}
-	return ans
+
+	return registers["b"]
 }
