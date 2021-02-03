@@ -67,7 +67,7 @@ func GetWithAOCCookie(url string, cookie string) []byte {
 func WriteToFile(filename string, contents []byte) {
 	MakeDir(filepath.Dir(filename))
 
-	err := ioutil.WriteFile(filename, contents, os.ModePerm)
+	err := ioutil.WriteFile(filename, contents, os.FileMode(0644))
 	if err != nil {
 		panicWrap(err, "writing file")
 	}
