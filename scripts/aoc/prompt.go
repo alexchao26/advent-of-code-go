@@ -1,4 +1,4 @@
-package main
+package aoc
 
 import (
 	"bytes"
@@ -8,25 +8,22 @@ import (
 
 	"golang.org/x/net/html"
 
-	"github.com/alexchao26/advent-of-code-go/scripts/fetchers"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
-func main() {
-	// determine day to fetch
-	day, year, cookie := fetchers.ParseFlags()
-	fmt.Println("fetching for day", day)
+func GetPrompt(day, year int, cookie string) {
+	fmt.Printf("fetching for day %d, year %d\n", day, year)
 
 	// make the request
 	url := fmt.Sprintf("https://adventofcode.com/%d/day/%d", year, day)
-	body := fetchers.GetWithAOCCookie(url, cookie)
+	body := GetWithAOCCookie(url, cookie)
 
 	// parse the dang html
 	prompt := parseHTML(body)
 
 	// write to file
-	filename := filepath.Join(util.Dirname(), "../../../", fmt.Sprintf("%d/day%02d/prompt.md", year, day))
-	fetchers.WriteToFile(filename, []byte(prompt))
+	filename := filepath.Join(util.Dirname(), "../../", fmt.Sprintf("%d/day%02d/prompt.md", year, day))
+	WriteToFile(filename, []byte(prompt))
 
 	fmt.Println("Wrote prompt to file: ", filename)
 

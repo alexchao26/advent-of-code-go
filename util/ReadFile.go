@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-/*
-ReadFile is a wrapper over io/ioutil.ReadFile but also determines the
-dynamic absolute path to the file.
-*/
+// ReadFile is a wrapper over io/ioutil.ReadFile but also determines the dynamic
+// absolute path to the file.
+//
+// Deprecated in favor of go:embed, refer to scripts/skeleton/tmpls
 func ReadFile(pathFromCaller string) string {
 	// Docs: https://golang.org/pkg/runtime/#Caller
 	_, filename, _, ok := runtime.Caller(1)

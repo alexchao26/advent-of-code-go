@@ -1,3 +1,5 @@
 .vscode/*
 input*.txt
-prompt.*
+!scripts/skeleton/tmpls/input.txt
+prompt.md
+prompt.txt

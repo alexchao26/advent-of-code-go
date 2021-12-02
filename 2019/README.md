@@ -1,5 +1,5 @@
 # Advent of Code 2019
-Language: GoLang.
+Language: Go
 
 [https://adventofcode.com/2019](https://adventofcode.com/2019)
 
