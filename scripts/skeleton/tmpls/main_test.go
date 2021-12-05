@@ -4,6 +4,8 @@ import (
 	"testing"
 )
 
+var example = ``
+
 func Test_part1(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -11,10 +13,15 @@ func Test_part1(t *testing.T) {
 		want  int
 	}{
 		{
-			name:  "actual",
-			input: input,
+			name:  "example",
+			input: example,
 			want:  0,
 		},
+		// {
+		// 	name:  "actual",
+		// 	input: input,
+		// 	want:  0,
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -32,10 +39,15 @@ func Test_part2(t *testing.T) {
 		want  int
 	}{
 		{
-			name:  "actual",
-			input: input,
+			name:  "example",
+			input: example,
 			want:  0,
 		},
+		// {
+		// 	name:  "actual",
+		// 	input: input,
+		// 	want:  0,
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
