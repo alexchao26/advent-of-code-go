@@ -13,6 +13,10 @@ skeleton: ## make skeleton main(_test).go files, optional: $DAY and $YEAR
 	@ if [[ -n $$DAY && -n $$YEAR ]]; then \
 		go run scripts/cmd/skeleton/main.go -day $(DAY) -year $(YEAR); \
 	fi
+# DAY only, use current year
+	@ if [[ -n $$DAY ]]; then \
+		go run scripts/cmd/skeleton/main.go -day $(DAY); \
+	fi
 # if DAY or YEAR are not set, allow the go binary to default to today
 	@ if [[ -z $$DAY || -z $$YEAR ]]; then \
 		go run scripts/cmd/skeleton/main.go; \
@@ -23,6 +27,10 @@ input: check-aoc-cookie ## get input, requires $AOC_SESSION_COOKIE, optional: $D
 	@ if [[ -n $$DAY && -n $$YEAR ]]; then \
 		go run scripts/cmd/input/main.go -day $(DAY) -year $(YEAR) -cookie $(AOC_SESSION_COOKIE); \
 	fi
+# DAY only, use current year
+	@ if [[ -n $$DAY ]]; then \
+		go run scripts/cmd/input/main.go -day $(DAY) -cookie $(AOC_SESSION_COOKIE); \
+	fi
 # if DAY or YEAR are not yet, allow the go binary to default to today
 	@ if [[ -z $$DAY || -z $$YEAR ]]; then \
 		go run scripts/cmd/input/main.go -cookie $(AOC_SESSION_COOKIE); \
@@ -31,6 +39,10 @@ input: check-aoc-cookie ## get input, requires $AOC_SESSION_COOKIE, optional: $D
 prompt: check-aoc-cookie ## get prompt, requires $AOC_SESSION_COOKIE, optional: $DAY and $YEAR
 # Check DAY and YEAR are both set
 	@ if [[ -n $$DAY && -n $$YEAR ]]; then \
+		go run scripts/cmd/prompt/main.go -day $(DAY) -year $(YEAR) -cookie $(AOC_SESSION_COOKIE); \
+	fi
+# DAY only, use current year
+	@ if [[ -n $$DAY ]]; then \
 		go run scripts/cmd/prompt/main.go -day $(DAY) -year $(YEAR) -cookie $(AOC_SESSION_COOKIE); \
 	fi
 # if DAY or YEAR are not yet, allow the go binary to default to today
