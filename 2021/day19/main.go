@@ -52,13 +52,11 @@ func part1(input string) (part1, part2 int) {
 	undetermined := scanners[1:]
 	// iterate while it has a non zero length
 	for len(undetermined) > 0 {
-		fmt.Println("undetermined:", len(undetermined))
+		fmt.Printf("progress: %d/%d\n", len(settled), len(scanners))
 
 		for i, undet := range undetermined {
 			maybeUpdated, ok := findAbsoluteCoordsForScanner(undet, settled)
 			if ok {
-				// fmt.Printf("found abs for scanner %d\n", maybeUpdated.number)
-				// fmt.Printf("updated to: %+v\n", maybeUpdated)
 				settled = append(settled, maybeUpdated)
 				// remove the determined scanner from undetermined list
 				copy(undetermined[i:], undetermined[i+1:])
@@ -72,7 +70,6 @@ func part1(input string) (part1, part2 int) {
 
 	allBeacons := map[[3]int]bool{}
 	for _, s := range settled {
-		// fmt.Printf("\n%+v\n", s)
 		for c := range s.absoluteCoordsMap {
 			allBeacons[c] = true
 		}
@@ -91,10 +88,6 @@ func part1(input string) (part1, part2 int) {
 		}
 	}
 	return len(allBeacons), furthest
-}
-
-func part2(input string) int {
-	return 0
 }
 
 type scanner struct {
@@ -120,24 +113,19 @@ func (s *scanner) fillAbsoluteCoordsMap() {
 func (s *scanner) fillRotations() {
 	// facing negative x
 	posX := s.relativeCoords
-	var negX, posY, negY, posZ, negZ [][3]int
+	var dir2, dir3, dir4, dir5, dir6 [][3]int
 	for _, c := range posX {
 		x, y, z := c[0], c[1], c[2]
-		// negX = append(negX, [3]int{-x, -y, z})
-		// posY = append(posY, [3]int{y, -x, -z})
-		// negY = append(negY, [3]int{-y, x, z})
-		// posZ = append(posZ, [3]int{z, -x, -y})
-		// negZ = append(negZ, [3]int{-z, -x, y})
-		negX = append(negX, [3]int{x, -y, -z})
-		posY = append(posY, [3]int{x, -z, y})
-		negY = append(negY, [3]int{-y, -z, x})
-		posZ = append(posZ, [3]int{-x, -z, -y})
-		negZ = append(negZ, [3]int{y, -z, -x})
+		dir2 = append(dir2, [3]int{x, -y, -z})
+		dir3 = append(dir3, [3]int{x, -z, y})
+		dir4 = append(dir4, [3]int{-y, -z, x})
+		dir5 = append(dir5, [3]int{-x, -z, -y})
+		dir6 = append(dir6, [3]int{y, -z, -x})
 	}
 	sixRotations := [][][3]int{
-		posX, negX,
-		posY, negY,
-		posZ, negZ,
+		posX, dir2,
+		dir3, dir4,
+		dir5, dir6,
 	}
 
 	// apply 4 rotations around the axis that the scanner is "staring down"
@@ -146,9 +134,6 @@ func (s *scanner) fillRotations() {
 		var r2, r3, r4 [][3]int // r1 is rotation itself
 		for _, c := range rotation {
 			x, y, z := c[0], c[1], c[2]
-			// r2 = append(r2, [3]int{x, z, -y})
-			// r3 = append(r3, [3]int{x, -y, -z})
-			// r4 = append(r4, [3]int{x, -z, y})
 			r2 = append(r2, [3]int{-y, x, z})
 			r3 = append(r3, [3]int{-x, -y, z})
 			r4 = append(r4, [3]int{y, -x, z})
@@ -169,7 +154,6 @@ func findAbsoluteCoordsForScanner(undet scanner, settled []scanner) (maybeUpdate
 					// assume the known and unknown beacon are the same, calculate the absolute coords of the unknown's scanner coords
 					// convert all of unknown list to their absolute coords, check against known list
 					unsettledAbsoluteCoords := makeAbsoluteCoordsList(absCoord, relativeCoord, rotatedCoords)
-					// fmt.Println("\tgenerated abs coords", unsettledAbsoluteCoords)
 
 					var matchingCount int
 					// var matched [][3]int // !
@@ -182,7 +166,6 @@ func findAbsoluteCoordsForScanner(undet scanner, settled []scanner) (maybeUpdate
 
 					// if true return a true or something, modify the scanner param pointer
 					if matchingCount >= 12 {
-						// fmt.Println("matched coords", set.number, "&", undet.number, matched) // !
 						undet.relativeCoords = rotatedCoords
 						undet.absoluteCoords = unsettledAbsoluteCoords
 						undet.fillAbsoluteCoordsMap()
