@@ -37,18 +37,18 @@ func NewMaxHeap() *MaxHeap {
 // calculating the indices of two children or the parent is simple
 // from any given index
 type heap struct {
-	nodes        []heapNode
+	nodes        []HeapNode
 	closerToRoot func(val1, val2 int) bool
 }
 
-// heapNode is an interface making the type for a Min/MaxHeap node flexible
+// HeapNode is an interface making the type for a Min/MaxHeap node flexible
 // nodes must be be able to state their value to be sorted by
-type heapNode interface {
+type HeapNode interface {
 	Value() int
 }
 
 // Front returns the first node in the heap, nil if the heap is empty
-func (h *heap) Front() heapNode {
+func (h *heap) Front() HeapNode {
 	if len(h.nodes) == 0 {
 		return nil
 	}
@@ -57,13 +57,13 @@ func (h *heap) Front() heapNode {
 
 // Add appends a new node onto the heap and heapifies it
 // to ensure correct ordering
-func (h *heap) Add(newNode heapNode) {
+func (h *heap) Add(newNode HeapNode) {
 	h.nodes = append(h.nodes, newNode)
 	h.heapifyFromEnd()
 }
 
 // Remove returns the node at the root, i.e. the minimum value node
-func (h *heap) Remove() heapNode {
+func (h *heap) Remove() HeapNode {
 	if len(h.nodes) == 0 {
 		return nil
 	}
