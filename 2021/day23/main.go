@@ -28,19 +28,39 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
-	if part == 1 {
-		ans := part1(input)
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
-	} else {
-		ans := part2(input)
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
-	}
+	ans := amphipodDay23(input, part)
+	util.CopyToClipboard(fmt.Sprintf("%v", ans))
+	fmt.Println("Output:", ans)
 }
 
-func part1(input string) int {
+var roomCoordToWantCharPart1 = map[[2]int]string{
+	{2, 3}: "A", {3, 3}: "A",
+	{2, 5}: "B", {3, 5}: "B",
+	{2, 7}: "C", {3, 7}: "C",
+	{2, 9}: "D", {3, 9}: "D",
+}
+var roomCoordToWantCharPart2 = map[[2]int]string{
+	{2, 3}: "A", {3, 3}: "A", {4, 3}: "A", {5, 3}: "A",
+	{2, 5}: "B", {3, 5}: "B", {4, 5}: "B", {5, 5}: "B",
+	{2, 7}: "C", {3, 7}: "C", {4, 7}: "C", {5, 7}: "C",
+	{2, 9}: "D", {3, 9}: "D", {4, 9}: "D", {5, 9}: "D",
+}
+
+func amphipodDay23(input string, part int) int {
 	start := parseInput(input)
+
+	roomCoordToWantChar := roomCoordToWantCharPart1
+	if part == 2 {
+		roomCoordToWantChar = roomCoordToWantCharPart2
+
+		// update the grid with the 2 new rows, move old ones down
+		start.grid = append(start.grid, nil, nil)
+		start.grid[6] = start.grid[4]
+		start.grid[5] = start.grid[3]
+
+		start.grid[3] = strings.Split("  #D#C#B#A#  ", "")
+		start.grid[4] = strings.Split("  #D#B#A#C#  ", "")
+	}
 
 	minHeap := heap.NewMinHeap()
 
@@ -53,22 +73,16 @@ func part1(input string) int {
 		if seenGrids[key] {
 			continue
 		}
-		fmt.Println(minHeap.Length(), "\n", front)
 		seenGrids[key] = true
 
-		if front.allDone() {
+		if front.allDone(roomCoordToWantChar) {
 			return front.energyUsed
 		}
 
-		unsettledCoords := front.getUnsettledCoords()
+		unsettledCoords := front.getUnsettledCoords(roomCoordToWantChar)
 		for _, unsettledCoord := range unsettledCoords {
-			// // do not try to move the last one that was moved, otherwise it'll infinite loop
-			// if front.coordOfLastMoved == unsettledCoord {
-			// 	continue
-			// }
-
 			ur, uc := unsettledCoord[0], unsettledCoord[1]
-			nextMoves := front.getNextPossibleMoves(unsettledCoord)
+			nextMoves := front.getNextPossibleMoves(unsettledCoord, roomCoordToWantChar)
 			for _, nextCoord := range nextMoves {
 				nr, nc := nextCoord[0], nextCoord[1]
 				if front.grid[nr][nc] != "." {
@@ -80,7 +94,6 @@ func part1(input string) int {
 				cp.energyUsed += calcEnergy(cp.grid[ur][uc], unsettledCoord, nextCoord)
 				cp.path += fmt.Sprintf("%s%v->%v{%d},", front.grid[ur][uc], unsettledCoord, nextCoord, cp.energyUsed)
 				cp.grid[nr][nc], cp.grid[ur][uc] = cp.grid[ur][uc], cp.grid[nr][nc]
-				cp.coordOfLastMoved = nextCoord
 
 				// add it to the min heap
 				minHeap.Add(cp)
@@ -88,23 +101,26 @@ func part1(input string) int {
 		}
 	}
 
-	// 10901 TOO LOW
-
 	panic("should return from loop")
 }
 
-func part2(input string) int {
-	return 0
-}
-
 type state struct {
-	grid             [][]string
-	coordOfLastMoved [2]int // store so you don't try to move the same one twice in a row
-	energyUsed       int
-	path             string
+	grid       [][]string
+	energyUsed int
+	path       string // for debugging
 }
 
-// Value is to implement the heap.Node interface so I can dump states into a Min Heap
+func parseInput(input string) *state {
+	grid := [][]string{}
+	for _, line := range strings.Split(input, "\n") {
+		grid = append(grid, strings.Split(line, ""))
+	}
+	return &state{
+		grid: grid,
+	}
+}
+
+// Value is to implement the heap.heapNode interface so I can dump states into a Min Heap
 func (s *state) Value() int {
 	return s.energyUsed
 }
@@ -118,7 +134,7 @@ func (s *state) String() string {
 		sb.WriteRune('\n')
 	}
 
-	sb.WriteString(fmt.Sprintf("nrg: %d, last_moved: %v, path: %s\n", s.energyUsed, s.coordOfLastMoved, s.path))
+	sb.WriteString(fmt.Sprintf("nrg: %d, ,path: %s\n", s.energyUsed, s.path))
 
 	return sb.String()
 }
@@ -126,10 +142,9 @@ func (s *state) String() string {
 // copy method to generate copies to make future heap nodes
 func (s *state) copy() *state {
 	cp := state{
-		grid:             make([][]string, len(s.grid)),
-		coordOfLastMoved: s.coordOfLastMoved,
-		energyUsed:       s.energyUsed,
-		path:             s.path,
+		grid:       make([][]string, len(s.grid)),
+		energyUsed: s.energyUsed,
+		path:       s.path,
 	}
 
 	// need to directly copy grid or else underlying arrays will be the same & interfere
@@ -141,14 +156,7 @@ func (s *state) copy() *state {
 	return &cp
 }
 
-var roomCoordToWantChar = map[[2]int]string{
-	{2, 3}: "A", {3, 3}: "A",
-	{2, 5}: "B", {3, 5}: "B",
-	{2, 7}: "C", {3, 7}: "C",
-	{2, 9}: "D", {3, 9}: "D",
-}
-
-func (s *state) allDone() bool {
+func (s *state) allDone(roomCoordToWantChar map[[2]int]string) bool {
 	for coord, want := range roomCoordToWantChar {
 		if s.grid[coord[0]][coord[1]] != want {
 			return false
@@ -157,45 +165,36 @@ func (s *state) allDone() bool {
 	return true
 }
 
-func (s *state) getUnsettledCoords() [][2]int {
+func (s *state) getUnsettledCoords(roomCoordToWantChar map[[2]int]string) [][2]int {
 	var unsettled [][2]int
-	for r, row := range s.grid {
-		for c, v := range row {
-			// iterate through the entire grid, for every letter "/[A-D]/"
-			if strings.Contains("ABCD", v) {
-				// add it to the unsettled list
-				coord := [2]int{r, c}
-				// IF not in coords map
-				if want, ok := roomCoordToWantChar[coord]; !ok {
-					unsettled = append(unsettled, coord)
-					continue // these are all probably unnecessary but helpful for my brain
-				} else {
-					// IF in coords map but not matching the wantChar
-					if want != v {
-						unsettled = append(unsettled, coord)
-						continue
-					} else {
-						// IF it matches wantChar but the cell below is
-						// ALSO in coords->want map AND it is the wrong want unsettledChar
-						// this means that it is in the right place but needs to get out
-						// of the way for a cell below
-						below := [2]int{r + 1, c}
-						wantBelow, ok := roomCoordToWantChar[below]
-						// ok means that it is a "room" cell, not wall
-						if ok && wantBelow != s.grid[r+1][c] {
-							unsettled = append(unsettled, coord)
-							continue
-						}
-					}
-				}
+	// check entire hallway
+	for col := 1; col < len(s.grid[0]); col++ {
+		if strings.Contains("ABCD", s.grid[1][col]) {
+			unsettled = append(unsettled, [2]int{1, col})
+		}
+	}
 
+	for _, col := range []int{3, 5, 7, 9} {
+		roomFullFromBack := true
+		for row := len(s.grid) - 2; row >= 2; row-- {
+			coord := [2]int{row, col}
+			wantChar := roomCoordToWantChar[coord]
+			gotChar := s.grid[row][col]
+			if gotChar != "." {
+				if gotChar != wantChar {
+					roomFullFromBack = false
+					unsettled = append(unsettled, coord)
+				} else if gotChar == wantChar && !roomFullFromBack {
+					// need to get out of the way of someone in the wrong room
+					unsettled = append(unsettled, coord)
+				}
 			}
 		}
 	}
 	return unsettled
 }
 
-// cannot stop in front of a room
+// cannot stop in front of a room, still applicable for part2
 var coordsInFrontOfRooms = map[[2]int]bool{
 	{1, 3}: true,
 	{1, 5}: true,
@@ -207,7 +206,7 @@ func isInHallway(coord [2]int) bool {
 	return coord[0] == 1
 }
 
-func (s *state) getNextPossibleMoves(unsettledCoord [2]int) [][2]int {
+func (s *state) getNextPossibleMoves(unsettledCoord [2]int, roomCoordToWantChar map[[2]int]string) [][2]int {
 	// get all the eligible locations for this coord to go to
 	unsettledChar := s.grid[unsettledCoord[0]][unsettledCoord[1]]
 
@@ -215,9 +214,9 @@ func (s *state) getNextPossibleMoves(unsettledCoord [2]int) [][2]int {
 		panic("unexpected character to get next moves for " + unsettledChar)
 	}
 
-	startedInHallway := isInHallway(unsettledCoord)
-	// fmt.Println(unsettledChar, unsettledCoord, "in hallway", startedInHallway)
 	var possible [][2]int
+
+	startedInHallway := isInHallway(unsettledCoord)
 
 	queue := [][2]int{unsettledCoord}
 	seen := map[[2]int]bool{}
@@ -243,26 +242,26 @@ func (s *state) getNextPossibleMoves(unsettledCoord [2]int) [][2]int {
 				} else if wantChar == unsettledChar {
 					// found the correct room
 					// check if there is a deeper part of the room (aka lower)
-					maybeLower := [2]int{front[0] + 1, front[1]}
-					if _, ok := roomCoordToWantChar[maybeLower]; ok {
-						lowerChar := s.grid[maybeLower[0]][maybeLower[1]]
-						if lowerChar == "." {
-							possible = append(possible, maybeLower)
-							// can only go deeper into the room so just kill the traverse here
-							continue
+
+					// if there is a "stuck" amphipod deeper in the room, cannot stop here
+					// if not deepest empty coord, cannot stop here
+					// in both cases walking further is handles all cases, whether that's
+					//   to walk further in or out of the room
+					isStuckAmphipod := false
+					roomHasDeeperOpenSpaces := false
+					for r := front[0] + 1; r < len(s.grid)-1; r++ {
+						char := s.grid[r][front[1]]
+						if char == "." {
+							roomHasDeeperOpenSpaces = true
 						}
-						// if lower char is the same, then can move into the front of the room
-						if lowerChar == unsettledChar {
-							possible = append(possible, front)
-							// no where else to go, so just continue and end this iteration
-							continue
+						if char != "." && char != unsettledChar {
+							isStuckAmphipod = true
+							break
 						}
-					} else {
-						// otherwise already deep part of the room, append it
-						// ?probably unreachable code
-						fmt.Println("unreachable code in else block?")
+					}
+
+					if !roomHasDeeperOpenSpaces && !isStuckAmphipod {
 						possible = append(possible, front)
-						continue
 					}
 				}
 			}
@@ -305,25 +304,4 @@ func calcEnergy(char string, start, end [2]int) int {
 		panic(char + " should not call calcEnergy()")
 	}
 	return energyPerType[char] * dist
-}
-
-func parseInput(input string) *state {
-	grid := [][]string{}
-	for _, line := range strings.Split(input, "\n") {
-		grid = append(grid, strings.Split(line, ""))
-	}
-
-	// // uncomment to check if coordToWantChars are correct...
-	// for c, unsettledChar := range roomCoordToWantChar {
-	// 	grid[c[0]][c[1]] = unsettledChar
-	// }
-	// st := state{grid: grid}
-	// fmt.Println(st.String())
-	// if !st.allDone() {
-	// 	panic("state.allDone() should be true ")
-	// }
-
-	return &state{
-		grid: grid,
-	}
 }
