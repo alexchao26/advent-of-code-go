@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/alexchao26/advent-of-code-go/cast"
+	"github.com/alexchao26/advent-of-code-go/halp"
 	"github.com/alexchao26/advent-of-code-go/util"
 )
 
@@ -91,34 +92,11 @@ func transparentOrigamiDay13(input string, part int) int {
 
 	// printing is a pita but necessary for reading part2
 	if part == 2 {
-		max := 0
-		for c := range coords {
-			if c[0] > max {
-				max = c[0]
-			}
-			if c[1] > max {
-				max = c[1]
-			}
-		}
-
-		grid := make([][]int, max+1)
-		for i := range grid {
-			grid[i] = make([]int, max+1)
-		}
-		for c := range coords {
-			grid[c[1]][c[0]] = 1
-		}
-		for _, row := range grid {
-			str := ""
-			for _, val := range row {
-				if val == 1 {
-					str += "#"
-				} else {
-					str += "."
-				}
-			}
-			fmt.Println(str)
-		}
+		// NOTE: as usual my printing is rotated and mirrored because my mental
+		// mapping of x/y uses rows/cols and ends up different than AOC :/
+		// Maybe next year I'll finally change my mental map... or not :)
+		halp.PrintInfiniteGridBools(coords, "#", ".")
 	}
+
 	return 0
 }

@@ -95,7 +95,8 @@ func enhanceImg(img map[[2]int]string, alg []string, infiniteSpaceStaysOff, infi
 	}
 
 	// fmt.Println("BEFORE")
-	// fmt.Println(imgString(img))
+	// debugging helper to print an infinite grid for
+	// halp.PrintInfiniteGridStrings(img, ".")
 
 	// now only need to check within firstRow - 2 through lastRow + 2 (same for cols)
 	// because flickers will kill that third row/col out
@@ -109,7 +110,7 @@ func enhanceImg(img map[[2]int]string, alg []string, infiniteSpaceStaysOff, infi
 	}
 
 	// fmt.Println("AFTER")
-	// fmt.Println(imgString(next))
+	// halp.PrintInfiniteGridStrings(next, ".")
 
 	return next
 }
@@ -154,26 +155,4 @@ func parseInput(input string) (alg []string, img map[[2]int]string) {
 	}
 
 	return alg, img
-}
-
-// printing for debugging
-// TODO pull into algos package for easier debugging. make a printing package?
-func imgString(img map[[2]int]string) string {
-	// get bounds
-	var firstRow, lastRow, firstCol, lastCol int
-	for coord := range img {
-		firstRow = mathy.MinInt(firstRow, coord[0])
-		lastRow = mathy.MaxInt(lastRow, coord[0])
-		firstCol = mathy.MinInt(firstCol, coord[1])
-		lastCol = mathy.MaxInt(lastCol, coord[1])
-	}
-
-	var sb strings.Builder
-	for r := firstRow; r <= lastRow; r++ {
-		for c := firstCol; c <= lastCol; c++ {
-			sb.WriteString(img[[2]int{r, c}])
-		}
-		sb.WriteString("\n")
-	}
-	return sb.String()
 }
