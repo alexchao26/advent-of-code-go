@@ -28,18 +28,12 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
-	if part == 1 {
-		ans := part1(input)
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
-	} else {
-		ans := part2(input)
-		util.CopyToClipboard(fmt.Sprintf("%v", ans))
-		fmt.Println("Output:", ans)
-	}
+	ans := transparentOrigamiDay13(input, part)
+	util.CopyToClipboard(fmt.Sprintf("%v", ans))
+	fmt.Println("Output:", ans)
 }
 
-func part1(input string) int {
+func transparentOrigamiDay13(input string, part int) int {
 	parts := strings.Split(input, "\n\n")
 
 	coords := map[[2]int]bool{}
@@ -48,19 +42,6 @@ func part1(input string) int {
 		sp := strings.Split(line, ",")
 		coords[[2]int{cast.ToInt(sp[0]), cast.ToInt(sp[1])}] = true
 	}
-	fmt.Println(len(coords))
-
-	// // printing is a pita
-	// grid := make([][]int, 15)
-	// for i := range grid {
-	// 	grid[i] = make([]int, 15)
-	// }
-	// for c := range coords {
-	// 	grid[c[1]][c[0]] = 1
-	// }
-	// for _, row := range grid {
-	// 	fmt.Println(row)
-	// }
 
 	for _, fold := range strings.Split(parts[1], "\n") {
 		cap := regexp.MustCompile(`fold along (x|y)=(\d+)`).FindStringSubmatch(fold)
@@ -70,9 +51,6 @@ func part1(input string) int {
 		dir := cap[0]
 		foldCoord := cast.ToInt(cap[1])
 
-		fmt.Println("folding on", dir, foldCoord)
-
-		// fmt.Println(fold, dir, line)
 		// dots will never appear exactly on a fold line
 		isFoldOnX := dir == "x"
 		nextMap := map[[2]int]bool{}
@@ -83,7 +61,6 @@ func part1(input string) int {
 						foldCoord - (c[0] - foldCoord),
 						c[1],
 					}
-					fmt.Println(c, "to", folded)
 					nextMap[folded] = true
 				} else {
 					nextMap[c] = true
@@ -97,7 +74,6 @@ func part1(input string) int {
 						c[0],
 						foldCoord - (c[1] - foldCoord),
 					}
-					fmt.Println(c, "to", folded)
 					nextMap[folded] = true
 				} else {
 					nextMap[c] = true
@@ -107,43 +83,42 @@ func part1(input string) int {
 
 		coords = nextMap
 
-		// TODO just break for part 1
-		// break
-	}
-
-	// printing is a pita
-	max := 0
-	for c := range coords {
-		if c[0] > max {
-			max = c[0]
-		}
-		if c[1] > max {
-			max = c[1]
+		// return after one fold for part 1?
+		if part == 1 {
+			return len(coords)
 		}
 	}
 
-	grid := make([][]int, max+1)
-	for i := range grid {
-		grid[i] = make([]int, max+1)
-	}
-	for c := range coords {
-		grid[c[1]][c[0]] = 1
-	}
-	for _, row := range grid {
-		str := ""
-		for _, val := range row {
-			if val == 1 {
-				str += "#"
-			} else {
-				str += "."
+	// printing is a pita but necessary for reading part2
+	if part == 2 {
+		max := 0
+		for c := range coords {
+			if c[0] > max {
+				max = c[0]
+			}
+			if c[1] > max {
+				max = c[1]
 			}
 		}
-		fmt.Println(str)
+
+		grid := make([][]int, max+1)
+		for i := range grid {
+			grid[i] = make([]int, max+1)
+		}
+		for c := range coords {
+			grid[c[1]][c[0]] = 1
+		}
+		for _, row := range grid {
+			str := ""
+			for _, val := range row {
+				if val == 1 {
+					str += "#"
+				} else {
+					str += "."
+				}
+			}
+			fmt.Println(str)
+		}
 	}
-
-	return len(coords)
-}
-
-func part2(input string) int {
 	return 0
 }
