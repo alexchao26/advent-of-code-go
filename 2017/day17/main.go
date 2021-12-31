@@ -47,8 +47,7 @@ func spinlock(input string, part int) int {
 		}
 		current = current.next
 
-		// progress log for part 2 brute force...
-		// todo optimize this slow pos
+		// progress log for part 2 brute force... this is SLOW
 		if i%1000000 == 0 {
 			log.Println(i, "steps done")
 		}

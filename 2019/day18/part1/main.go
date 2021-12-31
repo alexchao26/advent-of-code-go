@@ -260,7 +260,6 @@ func (graph *Graph) dfsMinmumDistance() int {
 // helper function to generate a cache string key
 // cache string is of the form entryKey:allKeysToFind
 func makeCacheKey(entry string, keysFound map[string]bool, totalKeys int) string {
-	// TODO: move this into the graph? to avoid making it 910238190382 times
 	allKeys := make([]string, totalKeys)
 	for i := 0; i < totalKeys; i++ {
 		allKeys[i] = cast.ASCIIIntToChar(int('a') + i)

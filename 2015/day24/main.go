@@ -1,4 +1,3 @@
-// TODO: pull combinations, multiplying a slice of ints, into algos and mathy packages?
 package main
 
 import (
