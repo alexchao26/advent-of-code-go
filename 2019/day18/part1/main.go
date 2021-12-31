@@ -112,9 +112,7 @@ func MakeDijkstraGrid(grid [][]string, startCoords [2]int) *DijkstraGrid {
 	// distance = 0
 	finalGrid[startCoords[0]][startCoords[1]].distance = 0
 	finalGrid[startCoords[0]][startCoords[1]].seen = true
-	queue := [][2]int{
-		[2]int{startCoords[0], startCoords[1]},
-	}
+	queue := [][2]int{{startCoords[0], startCoords[1]}}
 	return &DijkstraGrid{finalGrid, queue}
 }
 
@@ -167,10 +165,7 @@ func (dijk *DijkstraGrid) handleFrontOfQueue() (queueIsEmpty bool) {
 	dijk.queue = dijk.queue[1:]
 
 	// if queue is empty, there are no more paths to generate, return a true
-	if len(dijk.queue) == 0 {
-		return true
-	}
-	return false
+	return len(dijk.queue) == 0
 }
 
 /********************************************************************************************
