@@ -1,5 +1,8 @@
 ![350 stars!](./350.png)
 
+[reddit thread after completing the first six years](https://www.reddit.com/r/adventofcode/comments/klzgnx/complete_repo_and_thoughts_in_comments/)
+
+[reddit thread post 2021](https://www.reddit.com/r/adventofcode/comments/rrog0y/all_caught_up_repo_all_gogolang_thoughts_in/)
 
 ## Running Locally
 ### Requirements
