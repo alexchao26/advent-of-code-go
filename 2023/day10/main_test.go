@@ -106,12 +106,12 @@ func Test_pipeMaze(t *testing.T) {
 			part:  2,
 			want:  10,
 		},
-		// {
-		// 	name:  "actual part 2",
-		// 	input: input,
-		// part: 2,
-		// 	want:  0,
-		// },
+		{
+			name:  "actual part 2",
+			input: input,
+			part:  2,
+			want:  493,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
