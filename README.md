@@ -1,11 +1,7 @@
-![400 stars!](./400.png)
-
-[reddit thread after completing the first six years](https://www.reddit.com/r/adventofcode/comments/klzgnx/complete_repo_and_thoughts_in_comments/)
-
-[reddit thread post 2021](https://www.reddit.com/r/adventofcode/comments/rrog0y/all_caught_up_repo_all_gogolang_thoughts_in/)
+![450 stars!](./450.png)
 
 ### Quick Note
-I started this in a pre-generics Go/Golang world. Maybe one day I'll come back and learn generics as they'd be quite useful here. But that's for future Alex.
+I started this in a pre-generics Go/Golang world. Maybe one day I'll come back and learn generics as they'd be quite useful here. But that's for future me.
 
 ## Running Locally
 ### Requirements
