@@ -46,7 +46,9 @@ func part1(input string) int {
 	goodIndexSum := 0
 	for i, pair := range pairs {
 		left, right := pair[0], pair[1]
-		if isInOrder(left, right) {
+        inOrder, isTied := isInOrder(left, right) 
+        if isTied { panic("Tied at the top level") }
+		if inOrder {
 			goodIndexSum += i + 1
 		}
 	}
@@ -69,7 +71,9 @@ func part2(input string) int {
 
 	sort.Slice(allPackets, func(i, j int) bool {
 		left, right := allPackets[i], allPackets[j]
-		return isInOrder(left, right)
+        inOrder, isTied := isInOrder(left, right) 
+        if isTied { panic("Tied at the top level") }
+		return inOrder
 	})
 
 	ans := 1
@@ -100,10 +104,10 @@ func parseRawString(raw string) []interface{} {
 	return ans
 }
 
-func isInOrder(left, right []interface{}) bool {
+func isInOrder(left, right []interface{}) (inOrder bool, isTied bool) {
 	for l := 0; l < len(left); l++ {
 		if l > len(right)-1 {
-			return false
+			return false, false
 		}
 
 		// attempt to convert both to ints...
@@ -114,7 +118,7 @@ func isInOrder(left, right []interface{}) bool {
 		rightList, isRightList := right[l].([]interface{})
 		if isLeftNum && isRightNum {
 			if leftNum != rightNum {
-				return leftNum < rightNum
+				return leftNum < rightNum, false
 			}
 		} else if isLeftNum || isRightNum {
 			if isLeftNum {
@@ -125,15 +129,21 @@ func isInOrder(left, right []interface{}) bool {
 				panic(fmt.Sprintf("expected one num %T:%v, %T:%v", left[l],
 					left[l], right[l], right[l]))
 			}
-			return isInOrder(leftList, rightList)
+            inOrder, isTied := isInOrder(leftList, rightList)
+            if !isTied { return inOrder, isTied }
 		} else {
 			// both lists
 			if !isLeftList || !isRightList {
 				panic(fmt.Sprintf("expected two lists %T:%v, %T:%v", left[l],
 					left[l], right[l], right[l]))
 			}
-			return isInOrder(leftList, rightList)
+            inOrder, isTied := isInOrder(leftList, rightList)
+            if !isTied { return inOrder, isTied }
 		}
 	}
-	return true
+    if len(left) == len(right) {
+        return false, true
+    }
+
+	return true, false
 }
