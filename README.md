@@ -1,11 +1,14 @@
-![450 stars!](./450.png)
+![500 stars!](./500.png)
 
 ### Quick Note
-I started this in a pre-generics Go/Golang world. Maybe one day I'll come back and learn generics as they'd be quite useful here. But that's for future me.
+1. I started this in a pre-generics Go/Golang world. Maybe one day I'll come back and learn generics as they'd be quite useful here. But that's for future me.
+2. I decided to do 2024 in Python to get used to it for a new job, I have every intention of filling in my solutions in Go... but who knows how long that TODO will last...
+
 
 ## Running Locally
 ### Requirements
 Go 1.16+ is required because [embed][embed] is used for input files.
+Go 1.22 is needed for some features like ranging over ints or built in min() and max(). I started using these for the 2023 solutions iirc.
 
 Use `go run main.go -part <1 or 2>` will be usable to run the actual inputs for that day.
 
