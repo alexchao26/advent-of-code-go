@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 # https://gist.github.com/prwhite/8168133
 help: ## Show this help
 	@ echo 'Usage: make <target>'
